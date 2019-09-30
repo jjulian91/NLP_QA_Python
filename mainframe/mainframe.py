@@ -1,6 +1,7 @@
 import nltk
 from nltk.corpus import stopwords
 import do_magic.voila as voila
+import do_magic.dataQuery as sqlQuery
 
 def main():
     while(1):
@@ -17,6 +18,7 @@ def main():
                 category = "Location"
         print(category)
         voila.runstat()
+        sqlQuery.dbQuery(category)
 
 if __name__ == '__main__':
     main()
