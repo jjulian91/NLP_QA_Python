@@ -1,0 +1,15 @@
+Assist Percentage (AST%)
+Turnover Percentage (TOV%)
+Offensive Rebound Percentage (ORB%)
+Effective Field-Goal Percentage (eFG%)
+True Shooting Percentage (TS%)
+Usage Rate (USG%)
+Points Per Possession (PPP)
+Offensive Rating (ORtg)
+Offensive Win Shares (OWS)
+
+Found: https://bleacherreport.com/articles/1039116-understanding-the-nba-explaining-advanced-offensive-stats-and-metrics#slide8
+
+Full list:
+https://stats.nba.com/help/glossary/
+
