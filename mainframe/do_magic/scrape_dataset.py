@@ -28,18 +28,20 @@ def scrub_players_data():
 def scrub_season_stats():
     df = pandas.read_csv('../../csv_files/Seasons_Stats.csv')
     df = df.fillna(0)
-    df = df.drop('Unnamed: 0', 1)
+    # df = df.drop('Unnamed: 0', 1)
     df = df.rename(columns={'Tm': 'team'})
     df = df.rename(columns={'G': 'games'})
     df = df.rename(columns={'MP': 'avgminsprgame'})
     df = df.rename(columns={'GS': 'gamestartd'})
-    # acryonms = acronym_finder()
-    for i in df.team:
-        print(df.team[i][0])
-        # if i in acryonms:
-            # df.at[i, 'team'] = acryonms.get(i)
-    # print(df.team)
-    # print(df)
+    acryonms = acronym_finder()
+    j = 0
+    for i in range(len(df.team)):
+        k = df.at[i, 'team']
+        if k in acryonms:
+            df.at[i, 'team'] = acryonms.get(k)
+            j+=1
+    df.to_csv('../../csv_files/updatedTeams.csv')
+    print(df)
 
 
 def convert_from_cm(metric_height):
@@ -54,14 +56,9 @@ def convertKilo(val):
 def acronym_finder():
     df = pandas.read_html('https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations',skiprows=1)
 #   df = df.rename(columns={'Abbreviation/Acronym': 'Acronym'})
-#  type(df['1'])
     key_value_acryonms = {}
     for i in range(len(df[0])):
         key_value_acryonms[df[0].iloc[i][0]] = df[0].iloc[i][1] 
-    # print(key_value_acryonms)
-    # print(len(df[0]))
-    # print(df)
-    key_value_acryonms['FTW'] = 'Fort Wayne Pistons'
     return key_value_acryonms
 
 
