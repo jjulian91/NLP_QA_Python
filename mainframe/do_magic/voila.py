@@ -1,11 +1,23 @@
 # created to clean up main
+
 import nltk
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from spellchecker import SpellChecker
+
 counter = y = 0
 
 def word_Magic(question):
+    check = SpellChecker()
+    getBase = PorterStemmer()
     tokenized = nltk.word_tokenize(question)
-    print(f'tokenized words:    {tokenized}')
+    baseWords = []
+    for word in tokenized:
+        baseWords.append(getBase.stem(word))
+    spelledWords = []
+    for word in baseWords:
+        spelledWords.append(check.correction(word))
+    print(f'tokenized words:    {spelledWords}')
     # gives us stop words to run part of
     # speech on to begin categorization.
     #
@@ -13,10 +25,10 @@ def word_Magic(question):
     #
     #
     stop_words = set(stopwords.words('english'))
-    _stopwords = [words for words in tokenized if not words in stop_words]
+    _stopwords = [words for words in spelledWords if not words in stop_words]
     print(f'stop words to check for:    {_stopwords}')
     # End getting stop words.
-    postaggedwords = nltk.pos_tag(tokenized)
+    postaggedwords = nltk.tag.stanford.StanfordPOSTagger(spelledWords)
     #print(f'these are tagged words:      {postaggedwords}')
     return postaggedwords
 

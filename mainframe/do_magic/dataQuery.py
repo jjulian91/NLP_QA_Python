@@ -1,10 +1,10 @@
 import mysql.connector
 from mysql.connector import Error
 
-def dbQuery(question):
+def dbQuery(select_statement):
     try:
         connection = mysql.connector.connect(host='localhost',
-                                             database='csc667_database',
+                                             database='nba_facts',
                                              user='root',
                                              password='dBPJJWa4gkBjBQZn')
 
@@ -15,6 +15,11 @@ def dbQuery(question):
             cursor.execute("select database();")
             record = cursor.fetchone()
             print("Your connected to database: ", record)
+            query = connection.cursor()
+            query.execute(select_statement)
+            records = query.fetchall()
+            return records
+
 
     except Error as e:
         print("Error while connecting to MySQL", e)
