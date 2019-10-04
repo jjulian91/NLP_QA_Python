@@ -4,20 +4,37 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from spellchecker import SpellChecker
+from nltk.tag import StanfordPOSTagger
 
 counter = y = 0
 
 def word_Magic(question):
-    check = SpellChecker()
+    import os
+    jarpath = "C:/Program Files/Java/jdk-11.0.2/bin/java.exe"
+    #
+    #jarpath = "put path here"
+    java_path = jarpath
+    os.environ['JAVAHOME'] = java_path
+
+    jarpath = 'C:/Users/jonju/Documents/NLP_QA_Python/stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar'
+    #jarpath=""
+
+    modelpath='C:/Users/jonju/Documents/NLP_QA_Python/stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger'
+    #modelpath=""
+
+    jar = jarpath
+    model = modelpath
+    stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
+    #check = SpellChecker()
     getBase = PorterStemmer()
     tokenized = nltk.word_tokenize(question)
     baseWords = []
     for word in tokenized:
         baseWords.append(getBase.stem(word))
     spelledWords = []
-    for word in baseWords:
-        spelledWords.append(check.correction(word))
-    print(f'tokenized words:    {spelledWords}')
+    # for word in baseWords:
+    #    spelledWords.append(check.correction(word))
+    print(f'tokenized words:    {baseWords}')
     # gives us stop words to run part of
     # speech on to begin categorization.
     #
@@ -25,10 +42,10 @@ def word_Magic(question):
     #
     #
     stop_words = set(stopwords.words('english'))
-    _stopwords = [words for words in spelledWords if not words in stop_words]
+    _stopwords = [words for words in baseWords if not words in stop_words]
     print(f'stop words to check for:    {_stopwords}')
     # End getting stop words.
-    postaggedwords = nltk.tag.stanford.StanfordPOSTagger(spelledWords)
+    postaggedwords = stanfordPOS.tag(baseWords)
     #print(f'these are tagged words:      {postaggedwords}')
     return postaggedwords
 
