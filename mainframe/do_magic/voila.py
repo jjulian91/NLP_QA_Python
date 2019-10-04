@@ -11,19 +11,13 @@ counter = y = 0
 def word_Magic(question):
     import os
     jarpath = "C:/Program Files/Java/jdk-11.0.2/bin/java.exe"
-    #
-    #jarpath = "put path here"
     java_path = jarpath
     os.environ['JAVAHOME'] = java_path
 
-    jarpath = 'C:/Users/jonju/Documents/NLP_QA_Python/stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar'
-    #jarpath=""
+    dirname = os.path.dirname(__file__)
+    jar = os.path.join(dirname,'../../stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar')
+    model= os.path.join(dirname,'../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
 
-    modelpath='C:/Users/jonju/Documents/NLP_QA_Python/stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger'
-    #modelpath=""
-
-    jar = jarpath
-    model = modelpath
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
     #check = SpellChecker()
     getBase = PorterStemmer()
