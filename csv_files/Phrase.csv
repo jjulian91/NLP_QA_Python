@@ -1,0 +1,95 @@
+Phrase,FK
+Games,7
+Starts,8
+Minutes,9
+Player Efficiency,10
+True Shooting Percent,11
+3 point attempt rate,12
+free throw rate,13
+Offensive Rebound Percent,14
+Defensive Rebound Percent,15
+True Rebound Percentage,16
+Assist Percent,17
+Steal Percentage,18
+Block Percent,19
+Turn Over Percent,20
+Usage Percentage,21
+Offensive Win Shares,23
+Defensive win share,24
+win shares,25
+win share per 48 minutes,26
+Defensive box plus minus,28
+box plus minus,29
+Value over replacement,30
+Field Goal,31
+Field Goal average,32
+Field Goal percent,33
+three point,34
+three point average,35
+3 point percentage,36
+2 pointer,37
+two point average,38
+two point percent,39
+effective Field Goal Percent,40
+Free throw,41
+free throw average,42
+free throw percent,43
+Offensive Rebound,44
+Defensive Rebound,45
+Total Rebounds,46
+assists,47
+Steals,48
+Blocks,49
+Turn Overs,50
+Fouls,51
+points,52
+Games Played,7
+games Started,8
+Minutes Played,9
+True shooting percentage,11
+3 point attempts,12
+Offensive Rebound Percentage,14
+Defensive Rebound Percentage,15
+Rebound Percent,16
+Assist Percentage,17
+Steal Percent,18
+Block Percentage,19
+Turn Over Percentage,20
+Usage Percent,21
+Offensive Win share,23
+defensive win shares,24
+win share per 48,26
+Defensive box plus/minus,28
+box plus/minus,29
+Field Goals,31
+average Field Goals,32
+Percent of Field Goals,33
+three's,34
+average number of three's,35
+three point Percentage,36
+two pointer,37
+2 point average,38
+two point percentage,39
+effective Field goal Percent,40
+free throw percentage,43
+Rebounds,46
+assist,47
+Personal Fouls,51
+shooting percent,11
+three point attempt rate,12
+True Rebound Percent,16
+win per 48 mins,26
+Field Goal percentage,33
+three pointer,34
+average number of three pointers,35
+three percentage,36
+2 point percent,39
+shooting percentage,11
+three point attempts,12
+Rebound Percentage,16
+3 pointer,34
+3 percentage,36
+2 point percentage,39
+3's,34
+3 point average,35
+average number of 3's,35
