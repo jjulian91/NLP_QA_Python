@@ -1,0 +1,9 @@
+POS tag
+extract nouns
+query table for direct match of each/all nouns in array
+	if no match search %like% of each/all nouns
+if result of query is found -> Thenquery lookup table for correlation of word to column
+
+if match return column column.
+if no match spell check -> if still no match return row. (expansion possible here too)
+if no match return error checking issues *this is where we will expand the algo for NLP stuff (use spell checking, base words, etc).

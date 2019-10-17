@@ -19,28 +19,39 @@ def word_Magic(question):
     model= os.path.join(dirname,'../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
 
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
-    #check = SpellChecker()
-    getBase = PorterStemmer()
     tokenized = nltk.word_tokenize(question)
+    print(f'tokenized words:    {tokenized}')
+    #begin pos tagging
+    postaggedwords = stanfordPOS.tag(tokenized)
+    print(f'these are tagged words:      {postaggedwords}')
+    nouns = []
+
+    for word in postaggedwords:
+        if(word[1] == "NNP"):
+            nouns.append(word[0])
+            print('this is a noun:' + word[0])
+
+    #begin spell check  This is causing more harm than good right now
+    #check = SpellChecker()
+    #spelledWords = []
+    #for word in tokenized:
+    #    spelledWords.append(check.correction(word))
+    #print(f'These are words corrected:  {spelledWords}')
+
+
+    #begin baseing
+    getBase = PorterStemmer()
     baseWords = []
     for word in tokenized:
         baseWords.append(getBase.stem(word))
-    spelledWords = []
-    # for word in baseWords:
-    #    spelledWords.append(check.correction(word))
-    print(f'tokenized words:    {baseWords}')
-    # gives us stop words to run part of
-    # speech on to begin categorization.
-    #
-    # Stop Words may not be necessary
-    #
-    #
+
+    #stopwords
     stop_words = set(stopwords.words('english'))
     _stopwords = [words for words in baseWords if not words in stop_words]
     print(f'stop words to check for:    {_stopwords}')
     # End getting stop words.
-    postaggedwords = stanfordPOS.tag(baseWords)
-    #print(f'these are tagged words:      {postaggedwords}')
+
+    #
     return postaggedwords
 
 
