@@ -1,9 +1,12 @@
-POS tag
-extract nouns
+POS tag     ------------ Done
+extract nouns ------------- Done
 query table for direct match of each/all nouns in nouns array-> add to results to matches array -> check match array for overlap of nouns -> if overlap then return that one row
 else return all rows. 
 	
-if result of query is found -> Then query lookup table for correlation of word to column
-if match return column.
+if result of query is found -> Then query lookup table for correlation of word to column -> add matches to look up array. 
+
+search for overlap of lookup array. -> if no overlap search direct match 
+
+
 if no match spell check -> if still no match return row. (expansion possible here too)
 if no match return error checking issues *this is where we will expand the algo for NLP stuff (use spell checking, base words, etc).
