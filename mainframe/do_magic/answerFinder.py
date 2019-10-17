@@ -1,11 +1,10 @@
-def find(category, entries):
-    if category=="Name":
-        print("Name is category")
-    elif category == "Person":
-        print("Person is category")
-    elif category =="Location":
-        print("Location is category")
-    else:
-        print("category is unknown")
-    return entries
-
+def find(results):
+    overlap = []
+    print(f"this is results:   {results}")
+    for entry in results:
+        print(entry)
+        print(results.count(entry))
+        if results.count(entry) > 1:
+            overlap.append(results)
+    print(f"this is the list of overlap:         {overlap}")
+    return overlap
