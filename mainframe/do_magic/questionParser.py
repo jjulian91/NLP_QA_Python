@@ -7,20 +7,34 @@ def parseQuestion(question):
     tokenized = nltk.word_tokenize(question)
     tagged_sentence = voila.tag_Sentence(tokenized)
     nouns = []
-    matches =[]
-
+    matches = []
+    nonMatched = []
     category = "unknown"
     for word in tagged_sentence:
         if(word[1] == "NNP" or word[1] == "NN"):
             nouns.append(word[0])
             print('this is a noun:' + word[0])
             category = "Person"
+        else:
+            nonMatched.append(word[0])
 
     for noun in nouns:
         print("select * from player_data where name == " + "'"+noun+"'")
         result = sqlQuery.dbQuery("select * from player_data where name like " +"'%"+noun+"%'")
         if result != []:
             matches.append(result)
+        else:
+            nonMatched.append(noun)
+
+    #use nonMatched to retrieve nouns that aren't matched to a name value.
+    #search non matched with lookup table as well as the tagged sentences
+
+    nonMatched = voila.get_stopwords(nonMatched)
+    for word in nonMatched:
+        print(word)
+        print(sqlQuery.dbQuery("select * from phrase where Phrase like " + "'%" + word + "%'"))
+
+
     #begin chceking for row matching in query.
     # for words in tagged_sentence:
     #     if (category == "Person") :
