@@ -8,6 +8,7 @@ def parseQuestion(question):
     tagged_sentence = voila.tag_Sentence(tokenized)
     nouns = []
     matches =[]
+
     category = "unknown"
     for word in tagged_sentence:
         if(word[1] == "NNP" or word[1] == "NN"):
