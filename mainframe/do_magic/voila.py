@@ -8,6 +8,7 @@ from nltk.tag import StanfordPOSTagger
 
 counter = y = 0
 
+
 def tag_Sentence(tokenized):
     import os
     jarpath = "C:/Program Files/Java/jdk-11.0.2/bin/java.exe"
@@ -15,19 +16,28 @@ def tag_Sentence(tokenized):
     os.environ['JAVAHOME'] = java_path
 
     dirname = os.path.dirname(__file__)
-    jar = os.path.join(dirname,'../../stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar')
-    model= os.path.join(dirname,'../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
+    jar = os.path.join(dirname, '../../stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar')
+    model = os.path.join(dirname, '../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
 
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
     print(f'tokenized words:    {tokenized}')
-    #begin pos tagging
+    # begin pos tagging
     postaggedwords = stanfordPOS.tag(tokenized)
     print(f'these are tagged words:      {postaggedwords}')
 
+    # basically just checks if any name that is lower case can be identified as an actual name by capitalizing it. This is how a NNP (proper noun) is identified
+    for index, values in enumerate(postaggedwords):
+        listof = list(values)
+        v = stanfordPOS.tag(nltk.word_tokenize(''.join(listof[0]).capitalize()))
+        if v[0][1] == "NNP":
+            listof[0] = listof[0].capitalize()
+            v = tuple(v)
+            postaggedwords[index] = (v[0][0], v[0][1])
     return postaggedwords
 
+
 def spell_check(tokenized):
-    #begin spell check  This is causing more harm than good right now
+    # begin spell check  This is causing more harm than good right now
     check = SpellChecker()
     spelledWords = []
     for word in tokenized:
@@ -36,14 +46,17 @@ def spell_check(tokenized):
 
     return spelledWords
 
+
 def get_basewords(tokenized):
-    #begin baseing
+    # begin baseing
     getBase = PorterStemmer()
     baseWords = []
     for word in tokenized:
         baseWords.append(getBase.stem(word))
+
+
 def get_stopwords(tokenized):
-    #stopwords
+    # stopwords
 
     stop_words = set(stopwords.words('english'))
     _stopwords = [words for words in tokenized if not words in stop_words]
@@ -58,9 +71,8 @@ def get_stopwords(tokenized):
 def runstat():
     global counter, y
     # fyi apparently counter++ is not a thing in python lol
-    counter+=1
+    counter += 1
     value = input('Was this helpful? [y/N]: ')
     if value == 'y':
-        y+=1
-        return print(f'percentage accurate: {float(y/counter)}')
-
+        y += 1
+        return print(f'percentage accurate: {float(y / counter)}')

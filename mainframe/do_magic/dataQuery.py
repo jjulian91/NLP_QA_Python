@@ -24,7 +24,7 @@ def dbQuery(select_statement):
     except Error as e:
         print("Error while connecting to MySQL", e)
     finally:
-        if (connection.is_connected()):
+        if connection.is_connected():
             cursor.close()
             connection.close()
             print("MySQL connection is closed")
