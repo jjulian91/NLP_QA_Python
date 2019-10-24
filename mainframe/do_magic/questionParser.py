@@ -13,7 +13,6 @@ def parseQuestion(question):
     persons = []
     category = "unknown"
     for word in tagged_sentence:
-        print(f'word: {word}')
         if word[1] == "NN":
             nouns.append(word[0])
             print('this is a noun:' + word[0])
@@ -26,16 +25,12 @@ def parseQuestion(question):
         else:
             nonMatched.append(word[0])
 
-    for person in persons:
-        print("select * from player_data where name == " + "'" + person + "'")
-        result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + person + "%'")
-        if result:
-            matches.append(result)
-        else:
-            # nonMatched.append(person)
-            print('That person is not in our database.')
+    # should be two for full name
+    if len(persons) == 2:
+        join_fullname(persons, matches)
 
-    # for noun in nouns:
+
+        # for noun in nouns:
     #     print("select * from player_data where noun == " + "'" + person + "'")
     #     result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + noun + "%'")
     #     if result:
@@ -65,3 +60,13 @@ def parseQuestion(question):
     # dataQuery class.  Then we will be able to return entire rows and parse them from the main file.
     # entries = sqlQuery.dbQuery(select_statement)
     return answer.find(matches)
+
+# this just joins first name and last name to search for 1 input rather than 1 for first name and 1 for last
+def join_fullname(p, matches):
+    name = ''.join(p[0]) + " " + ''.join(p[1])
+    result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + name + "%'")
+    if result:
+        matches.append(result)
+    else:
+        print('That person is not in our database.')
+

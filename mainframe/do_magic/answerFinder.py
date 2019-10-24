@@ -13,6 +13,7 @@ def find(results):
             overlap.append(flattened[j])
         j += 1
     print(f"this is the list of overlap:         {overlap}")
+    print(f'Name Found in DB: {flattened}')
     return overlap
 
 def flatten(results):
