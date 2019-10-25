@@ -10,7 +10,3 @@ search for overlap of lookup array. -> if no overlap search direct match
 
 if no match spell check -> if still no match return row. (expansion possible here too)
 if no match return error checking issues *this is where we will expand the algo for NLP stuff (use spell checking, base words, etc).
-
-tagger abbreviation cheat-sheat:
-    https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
-    https://www.sketchengine.eu/penn-treebank-tagset/
