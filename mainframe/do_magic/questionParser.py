@@ -9,6 +9,7 @@ def parseQuestion(question):
     nouns = []
     matches = []
     nonMatched = []
+    allResults = []
     category = "unknown"
     for word in tagged_sentence:
         if(word[1] == "NNP" or word[1] == "NN"):
@@ -19,8 +20,9 @@ def parseQuestion(question):
             nonMatched.append(word[0])
 
     for noun in nouns:
-        print("select * from player_data where name == " + "'"+noun+"'")
+        "select * from player_data where name == " + "'"+noun+"'"
         result = sqlQuery.dbQuery("select * from player_data where name like " +"'%"+noun+"%'")
+        allResults.append(result)
         if result != []:
             matches.append(result)
         else:
@@ -28,11 +30,12 @@ def parseQuestion(question):
 
     #use nonMatched to retrieve nouns that aren't matched to a name value.
     #search non matched with lookup table as well as the tagged sentences
-
+    for entry in allResults:
+        print(entry)
     nonMatched = voila.get_stopwords(nonMatched)
     for word in nonMatched:
         print(word)
-        print(sqlQuery.dbQuery("select * from phrase where Phrase like " + "'%" + word + "%'"))
+        sqlQuery.dbQuery("select * from phrase where Phrase like " + "'%" + word + "%'")
 
 
     #begin chceking for row matching in query.
