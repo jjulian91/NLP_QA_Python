@@ -10,11 +10,11 @@ def dbQuery(select_statement):
 
         if connection.is_connected():
             db_Info = connection.get_server_info()
-            print("Connected to MySQL Server version ", db_Info)
+            # print("Connected to MySQL Server version ", db_Info)
             cursor = connection.cursor()
             cursor.execute("select database();")
             record = cursor.fetchone()
-            print("Your connected to database: ", record)
+            # print("Your connected to database: ", record)
             query = connection.cursor()
             query.execute(select_statement)
             records = query.fetchall()
@@ -27,4 +27,4 @@ def dbQuery(select_statement):
         if (connection.is_connected()):
             cursor.close()
             connection.close()
-            print("MySQL connection is closed")
+            # print("MySQL connection is closed")

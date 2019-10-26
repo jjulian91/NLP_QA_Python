@@ -1,4 +1,7 @@
 def find(results):
+    # only 1 hit in DB
+    if len(results) == 1:
+        return results
     overlap = []
     flattened = flatten(results)
     j = 0
@@ -12,8 +15,10 @@ def find(results):
         if count > 1:
             overlap.append(flattened[j])
         j += 1
-    print(f"this is the list of overlap:         {overlap}")
+    for i, over in enumerate(overlap):
+        print(f'this is the list of overlap at position {i} : {over}')
     return overlap
+
 
 def flatten(results):
     flattened = []
