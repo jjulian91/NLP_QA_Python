@@ -51,8 +51,9 @@ def spell_check(tokenized):
                 if val >= len(candidates):
                     return
                 to_list = list(candidates)
-                print(f'picked: {to_list[val]}')
                 return to_list[val]
+    else:
+        return tokenized
 
 
 def get_basewords(tokenized):

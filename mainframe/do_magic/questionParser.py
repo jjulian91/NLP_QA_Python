@@ -11,9 +11,11 @@ def parseQuestion(question):
     matches = []
     nonMatched = []
     allResults = []
+    phrases = []
     category = "unknown"
+    tagged_sentence = apostrophefix(tagged_sentence)
     for word in tagged_sentence:
-        if (word[1] == "NNP" or word[1] == "NN"):
+        if word[1] == "NNP" or word[1] == "NN":
             nouns.append(word[0])
             print('this is a noun:' + word[0])
             category = "Person"
@@ -21,10 +23,9 @@ def parseQuestion(question):
             nonMatched.append(word[0])
 
     for noun in nouns:
-        # "select * from player_data where name == " + "'" + noun + "'"
         result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + noun + "%'")
         allResults.append(result)
-        if result != []:
+        if result:
             matches.append(result)
         else:
             nonMatched.append(noun)
@@ -32,24 +33,32 @@ def parseQuestion(question):
     # use nonMatched to retrieve nouns that aren't matched to a name value.
     # search non matched with lookup table as well as the tagged sentences
     for entry in allResults:
-        print(entry)
+        print(f'entry: \n{entry}')
     nonMatched = voila.get_stopwords(nonMatched)
     for word in nonMatched:
-        print(f'nonmatched words:   {word}')
-        refined_word = voila.spell_check(word)
+        # if it already has double quotes that means its ready to be put into sql query and will not go through spellcheck
+        if word.find("''") != -1:
+            refined_word = word
+        # if it doesnt have double quotes run the spell check
+        else:
+            refined_word = voila.spell_check(word)
+            # if spell check returns something back like o'neal. o'neal is NOT sql query safe. so we need to make it o''neal to make it sql query safe
+            if refined_word:
+                refined_word = singlequoteSQLfix(refined_word)
+
         if refined_word:
             result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + refined_word + "%'")
             if result:
                 print(f'there was a hit with {refined_word} after spellcheck')
                 matches.append(result)
-                # answer.find(matches)
-        else:
-            print(f'[{word}] is either correctly spelled and not in our DB or it could not be spellchecked')
-        # put spellcheck on nonmatched words
-        # run same sql from noun
-        # if hit pass to all result
-        # run answere.finder on all results/
-        sqlQuery.dbQuery("select * from phrase where Phrase like " + "'%" + word + "%'")
+
+        # if all else fails to search
+        phrase_result = sqlQuery.dbQuery("select * from phrase where Phrase like " + "'%" + word + "%'")
+        # not sure which array to append too?? so just made one -___-
+        if phrase_result:
+            nouns.append(phrase_result)
+            print(
+                f'there was a hit in the \'[phrase]\' table with the word [{word}] having a result: \n{phrase_result}')
 
     # begin chceking for row matching in query.
     # for words in tagged_sentence:
@@ -66,3 +75,31 @@ def parseQuestion(question):
     # dataQuery class.  Then we will be able to return entire rows and parse them from the main file.
     # entries = sqlQuery.dbQuery(select_statement)
     return answer.find(matches)
+
+
+# checks if theres an apostrophe e.g. D'angelo. Adds apostrophe for escape character in SQL --> d''angelo. if there is NO apostrophe then returns word
+def singlequoteSQLfix(val):
+    index = val.find("'")
+    return val[:index] + "''" + val[index + 1:] if index != -1 else val
+
+
+# modifies the query values to make them sql safe search.. eg: d'angelo 3's
+def apostrophefix(words):
+    for i, word in enumerate(words):
+        if i >= len(words) - 1:
+            break
+        j = i + 1
+        # case where three's splits into [three] & ['s], we make it one word [three's] and add the apostrophe to it -> [three''s] for sql safe search. then we remove the tuple ('s, POS) and return ("three''s", "null")
+        if words[j][1] == "POS" and words[i][1] == "NN" or words[j][1] == "POS" and words[i][1] == "CD":
+            concat = words[i][0] + words[j][0]
+            concat = singlequoteSQLfix(concat)
+            words[i] = (concat, "null")
+            words.remove(words[j])
+        else:
+            # if the above is not the case e.g d'angelo. just fix it --> d''angelo and return it along with its part of speech
+            words[i] = (singlequoteSQLfix(words[i][0]), words[i][1])
+    # case where o'neal is last in the query --> o''neal
+    # if last value -> [three''s] already has been modified then skip. but for cases where o'neal is last . make it o''neal
+    if words[len(words) - 1][0].find("''") == -1:
+        words[len(words) - 1] = singlequoteSQLfix(words[len(words) - 1][0]), words[len(words) - 1][1]
+    return words
