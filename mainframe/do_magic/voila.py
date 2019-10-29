@@ -21,10 +21,10 @@ def tag_Sentence(tokenized):
     model = os.path.join(dirname, '../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
 
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
-    print(f'tokenized words:    {tokenized}')
+    #print(f'tokenized words:    {tokenized}')
     # begin pos tagging
     postaggedwords = stanfordPOS.tag(tokenized)
-    print(f'these are tagged words:      {postaggedwords}')
+    #print(f'these are tagged words:      {postaggedwords}')
 
     return postaggedwords
 
@@ -69,7 +69,7 @@ def get_stopwords(tokenized):
 
     stop_words = set(stopwords.words('english'))
     _stopwords = [words for words in tokenized if not words in stop_words]
-    print(f'stop words to check for:    {_stopwords}')
+    #print(f'stop words to check for:    {_stopwords}')
     # End getting stop words.
 
     #

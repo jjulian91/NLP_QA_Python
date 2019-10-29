@@ -10,7 +10,8 @@ def main():
               "\t\"who won the NBA finals?\".  ")
         value = input('Enter in a question: ')
         result = parse.parseQuestion(value)
-        print(f'RESULTS: {result}') if len(result) >= 1 else print('There are no results that match this question')
+        print(result)
+        #print(f'RESULTS: {result}') if len(result) >= 1 else print('There are no results that match this question')
         voila.runstat()
 
 
