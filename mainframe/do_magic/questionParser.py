@@ -23,13 +23,12 @@ def parseQuestion(question):
     matches = []
     nonMatched = []
     allResults = []
-    phrases = []
     category = "unknown"
 
     for word in tagged_sentence:
         if word[1] == "NNP" or word[1] == "NN":
             nouns.append(word[0])
-            #print('this is a noun:' + word[0])
+            print('this is a noun:' + word[0])
             category = "Person"
         else:
             nonMatched.append(word[0])
@@ -38,7 +37,7 @@ def parseQuestion(question):
         result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + noun + "%'")
         allResults.append(result)
         if result:
-            matches.append(result)
+            matches.append(noun)
         else:
             nonMatched.append(noun)
 
@@ -90,11 +89,15 @@ def parseQuestion(question):
         #todo this is an issue --  we gotta get a better way to flatten ANY array to a single array.
         name = answer.find(allResults)
         #print("this is the print statment you need")
-        flattened_phrase = answer.flatten(phrase_result)
-        #print(flattened_phrase[5])
-        #print(name)
-        Qanswer = answer.flatten(sqlQuery.dbQuery("select * from "+ flattened_phrase[5] + " where name ="+ "'" + name[0] + "'"))
-        info = Qanswer[flattened_phrase[4]]
+        phraser = answer.find(phrase_matches)
+        # print(phrase_result)
+        print(phraser)
+        # flattened_phrase = answer.flatten(phrase_result)
+        # #print(flattened_phrase[5])
+        print(name)
+        #sqlQuery.dbQuery("select * from "+ flattened_phrase[5] + " where name ="+ "'" + name[0] + "'")
+        #
+        # info = Qanswer[flattened_phrase[4]]
 
     # begin chceking for row matching in query.
     # for words in tagged_sentence:
@@ -110,7 +113,7 @@ def parseQuestion(question):
     # # this is a beginning to the select statements -- we will need to build upon this and pass it to the
     # dataQuery class.  Then we will be able to return entire rows and parse them from the main file.
     # entries = sqlQuery.dbQuery(select_statement)
-    return info
+    return answer.find(matches)
 
 
 # checks if theres an apostrophe e.g. D'angelo. Adds apostrophe for escape character in SQL --> d''angelo. if there is NO apostrophe then returns word
