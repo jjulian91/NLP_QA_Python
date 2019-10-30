@@ -4,7 +4,7 @@ import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
 
 
-#return from this statement " ("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase like "
+# return from this statement " ("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase like "
 #              + "'%" + word + "%'") "
 # is : [('tall', 56, 56, 'height', 5, 'player_data')]
 # 0 = reference 1 = FK 2 = PK 3 = name of column 4 = column number (for getting answer). 5 is table where lookup is found
@@ -43,8 +43,8 @@ def parseQuestion(question):
 
     # use nonMatched to retrieve nouns that aren't matched to a name value.
     # search non matched with lookup table as well as the tagged sentences
-    #for entry in allResults:
-        #print(f'entry: \n{entry}')
+    # for entry in allResults:
+    # print(f'entry: \n{entry}')
     nonMatched = voila.get_stopwords(nonMatched)
     for word in nonMatched:
         # if it already has double quotes that means its ready to be put into sql query and will not go through spellcheck
@@ -61,10 +61,10 @@ def parseQuestion(question):
         if refined_word:
             result = sqlQuery.dbQuery("select * from player_data where name like " + "'%" + refined_word + "%'")
             if result:
-                #print(f'there was a hit with {refined_word} after spellcheck')
+                # print(f'there was a hit with {refined_word} after spellcheck')
                 matches.append(result)
 
-        #todo
+        # todo
         # this is good work --- we need to take the results from the phrase_matches and triangulate as we did in first
         # query.  From there we are going to be using the results from all the searches to find the actual answers
         # from the table and work on displaying them as the expected by user.  We should also reorganize the code.
@@ -75,27 +75,28 @@ def parseQuestion(question):
         #
 
         # if all else fails to search
-        phrase_result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase like "
-              + "'%" + word + "%'")
+        phrase_result = sqlQuery.dbQuery(
+            "select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase like "
+            + "'%" + word + "%'")
 
-        phrase_matches =[]
+        phrase_matches = []
         # not sure which array to append too?? so just made one -___-
 
         if phrase_result:
             phrase_matches.append(phrase_result)
-            #print(
+            # print(
             #    f'there was a hit in the \'[phrase]\' table with the word [{word}] having a result: \n{phrase_result}')
 
-        #todo this is an issue --  we gotta get a better way to flatten ANY array to a single array.
+        # todo this is an issue --  we gotta get a better way to flatten ANY array to a single array.
         name = answer.find(allResults)
-        #print("this is the print statment you need")
+        # print("this is the print statment you need")
         phraser = answer.find(phrase_matches)
         # print(phrase_result)
         print(phraser)
         # flattened_phrase = answer.flatten(phrase_result)
         # #print(flattened_phrase[5])
         print(name)
-        #sqlQuery.dbQuery("select * from "+ flattened_phrase[5] + " where name ="+ "'" + name[0] + "'")
+        # sqlQuery.dbQuery("select * from "+ flattened_phrase[5] + " where name ="+ "'" + name[0] + "'")
         #
         # info = Qanswer[flattened_phrase[4]]
 
@@ -142,3 +143,15 @@ def apostrophefix(words):
     if words[len(words) - 1][0].find("''") == -1:
         words[len(words) - 1] = singlequoteSQLfix(words[len(words) - 1][0]), words[len(words) - 1][1]
     return words
+
+
+one = []
+
+
+def one_array(array):
+    for i in array:
+        if isinstance(i, list):
+            one_array(i)
+        else:
+            one.append(i)
+    return one
