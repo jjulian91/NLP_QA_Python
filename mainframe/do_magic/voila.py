@@ -86,6 +86,8 @@ def runstat():
         y += 1
         return print(f'percentage accurate: {float(y / counter)}')
 
+
+# todo have not used this yet, may not need but leave it as is.
 def one_array(array):
     one = []
     for i in array:
@@ -98,6 +100,7 @@ def one_array(array):
 
 # checks if theres an apostrophe e.g. D'angelo. Adds apostrophe for escape character in SQL --> d''angelo.
 # if there is NO apostrophe then returns word
+# todo this has helped tremendously
 def singlequoteSQLfix(val):
     index = val.find("'")
     return val[:index] + "''" + val[index + 1:] if index != -1 else val

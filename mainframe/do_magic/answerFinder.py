@@ -1,24 +1,27 @@
+import random
 import sys
 
 
-def find(results):
+def triangulate(results):
     overlap = []
     flattened = flatten(results)
+    random.seed(a=None, version=2)
     # only 1 row-hit in DB
     if len(flattened) == 1:
-        return results
-    for i in range(len(flattened) - 1):
-        for j in range(i + 1, len(flattened)):
-            if verify_all(flattened[i], flattened[j]):
-                return flattened[i]
+        return flattened
+#    for i in range(len(flattened) - 1):
+#        for j in range(i + 1, len(flattened)):
+#            if verify_all(flattened[i], flattened[j]):
+#                return flattened[i]
 
     #print(len(flattened))
     j = 0
     while j < len(flattened):
+        check2 = random.randint(0, len(flattened[0])-1)
         count = 0
         i = j
         while i < len(flattened):
-            if flattened[i][0] == flattened[j][0]:
+            if flattened[i][0] == flattened[j][0] and flattened[1][check2] == flattened[j][check2]:
                 count += 1
             i += 1
         if count > 1:
