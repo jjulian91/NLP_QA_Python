@@ -12,7 +12,7 @@ def find(results):
             if verify_all(flattened[i], flattened[j]):
                 return flattened[i]
 
-    print(len(flattened))
+    #print(len(flattened))
     j = 0
     while j < len(flattened):
         count = 0

@@ -85,3 +85,43 @@ def runstat():
     if value == 'y':
         y += 1
         return print(f'percentage accurate: {float(y / counter)}')
+
+def one_array(array):
+    one = []
+    for i in array:
+        if isinstance(i, list):
+            one_array(i)
+        else:
+            one.append(i)
+    return one
+
+
+# checks if theres an apostrophe e.g. D'angelo. Adds apostrophe for escape character in SQL --> d''angelo.
+# if there is NO apostrophe then returns word
+def singlequoteSQLfix(val):
+    index = val.find("'")
+    return val[:index] + "''" + val[index + 1:] if index != -1 else val
+
+# modifies the query values to make them sql safe search.. eg: d'angelo 3's
+def apostrophefix(words):
+    for i, word in enumerate(words):
+        if i >= len(words) - 1:
+            break
+        j = i + 1
+        # case where three's splits into [three] & ['s], we make it one word [three's] and add the apostrophe to it ->
+        # [three''s] for sql safe search. then we remove the tuple ('s, POS) and return ("three''s", "null")
+        if words[j][1] == "POS" and words[i][1] == "NN" or words[j][1] == "POS" and words[i][1] == "CD":
+            concat = words[i][0] + words[j][0]
+            concat = singlequoteSQLfix(concat)
+            words[i] = (concat, "null")
+            words.remove(words[j])
+        else:
+            # if the above is not the case e.g d'angelo. just fix it --> d''angelo and return it along with its part of
+            # speech
+            words[i] = (singlequoteSQLfix(words[i][0]), words[i][1])
+    # case where o'neal is last in the query --> o''neal
+    # if last value -> [three''s] already has been modified then skip. but for cases where o'neal is last . make it
+    # o''neal
+    if words[len(words) - 1][0].find("''") == -1:
+        words[len(words) - 1] = singlequoteSQLfix(words[len(words) - 1][0]), words[len(words) - 1][1]
+    return words
