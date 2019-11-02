@@ -1,4 +1,6 @@
 import random
+import collections
+import do_magic.voila as voila
 
 
 def triangulate(results):
@@ -8,14 +10,15 @@ def triangulate(results):
     #     length_of_each.append(len(results[i]))
     #
     #
-
-
+    flattened = []
     overlap = []
-    flattened = flatten(results)
+    if len(results) > 0:
+        flattened = list(flatten(results))
+
     random.seed(a=None, version=2)
     # only 1 row-hit in DB
-    if len(flattened) == 1:
-        return flattened
+    # if len(flattened) == 1:
+    #     return flattened
     j = 0
     while j < len(flattened):
         check2 = random.randint(0, len(flattened[0]) - 1)
@@ -34,9 +37,11 @@ def triangulate(results):
     return overlap
 
 
-def flatten(results):
-    flattened = []
-    for entry in results:
-        for record in entry:
-            flattened.append(record)
-    return flattened
+def flatten(l):
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):
+            yield from flatten(el)
+        else:
+            yield el
+
+

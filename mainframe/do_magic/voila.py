@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from spellchecker import SpellChecker
 from nltk.tag import StanfordPOSTagger
+from nltk.stem import WordNetLemmatizer
 
 counter = y = 0
 check = SpellChecker()
@@ -58,10 +59,13 @@ def spell_check(tokenized):
 
 def get_basewords(tokenized):
     # begin baseing
-    getBase = PorterStemmer()
+    getBase = WordNetLemmatizer()
+    # getBase =
     baseWords = []
     for word in tokenized:
-        baseWords.append(getBase.stem(word))
+        baseWords.append(getBase.lemmatize(word))
+
+    return baseWords
 
 
 def get_stopwords(tokenized):
