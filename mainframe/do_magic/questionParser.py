@@ -21,6 +21,13 @@ tableList = ["phrase", "player_data", "stats"]
 
 # todo capture dates/year ex: how many points did larry bird have in 1971?
 
+#words == non proper nouns.
+
+#general algo flow:
+# 1. separate nouns and words. Proper nouns into Nouns, all regular nouns in words and nouns. else words.
+# 2. run query for WORDS to find the table and column to search
+# 2a. If no result is found for WORDS take nonmatched words pass into Wordnet finder.
+
 
 def parseQuestion(question):
     #todo start
@@ -42,6 +49,9 @@ def parseQuestion(question):
         if word[1] == "NNP":
             nouns.append(word[0])
             category = "Person"
+        elif word[1] == "NN":
+            nouns.append(word[0])
+            words.append(word[0])
         else:
             words.append(word[0])
 
@@ -50,7 +60,7 @@ def parseQuestion(question):
 
     for word in wordList:
         phrase_result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
-                                         " like " + "'%" + word + "%'")
+                                         " like " + "'%" + word + "%' COLLATE utf8_general_ci")
         if phrase_result:
             wordResults.append(phrase_result)
         else:
@@ -75,27 +85,25 @@ def parseQuestion(question):
         while isinstance(wordResults[0], tuple):
             wordResults = answer.flatten(wordResults)
 
-    #todo insert check here to validate word results isn't empty
+    #todo insert check here to validate wordresults isn't empty
+    # if this is empty you can run candidates, then start looking at "bad returns".
+
 
     #sets basic SQL begining
     selectStatment = "select * from player_data where name like "
+
     for table in tableList:
         if table == wordResults[5]:
             selectStatment = "select * from " + table + " where name like "
 
-    #Separates nouns from nonNouns.  Parses table for match.
-    for word in tagged_sentence:
-        if word[1] == "NNP" or word[1] == "NN":
-            nouns.append(word[0])
-            category = "Person"
 
     # searches for direct name look up from table returned from non-noun check.
     for noun in nouns:
-        result = sqlQuery.dbQuery(selectStatment + "'%" + noun + "%'")
+        result = sqlQuery.dbQuery(selectStatment + "'%" + noun + "%' COLLATE utf8_general_ci")
         if result:
             nameResults.append(result)
         else:
-            nonMatchedNouns.append(noun)
+            nonMatchedWord.append(noun)
 
     nameResults = answer.triangulate(nameResults)
 
@@ -105,7 +113,12 @@ def parseQuestion(question):
             nameResults.append(results)
         nameResults = answer.triangulate(nameResults)
 
-    #this is ONLY FOR 1 to 1 look ups todo we might need to create an enum for flags
+    #this is ONLY FOR 1 to 1 look ups
+    # todo we might need to create an enum for flags  Could possibly use lemma searching for NOUNS.
+
+
+
+
     if len(nameResults) > 0:
         while isinstance(nameResults[0], tuple):
             nameResults = answer.flatten(nameResults)
@@ -155,6 +168,7 @@ def wordNetResults(nonMatched):
     for word in nonMatched:
         for syn in wordnet.synsets(word):
             for lemmas in syn.lemmas():
+                print(lemmas.name())
                 result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
                                           " like " + "'%" + lemmas.name() + "%'")
                 if result:
