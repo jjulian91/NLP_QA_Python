@@ -1,23 +1,24 @@
 import random
-import sys
 
 
 def triangulate(results):
+    # number_of_arrays = len(results)
+    # length_of_each = []
+    # for i in range(number_of_arrays):
+    #     length_of_each.append(len(results[i]))
+    #
+    #
+
+
     overlap = []
     flattened = flatten(results)
     random.seed(a=None, version=2)
     # only 1 row-hit in DB
     if len(flattened) == 1:
         return flattened
-#    for i in range(len(flattened) - 1):
-#        for j in range(i + 1, len(flattened)):
-#            if verify_all(flattened[i], flattened[j]):
-#                return flattened[i]
-
-    #print(len(flattened))
     j = 0
     while j < len(flattened):
-        check2 = random.randint(0, len(flattened[0])-1)
+        check2 = random.randint(0, len(flattened[0]) - 1)
         count = 0
         i = j
         while i < len(flattened):
@@ -39,11 +40,3 @@ def flatten(results):
         for record in entry:
             flattened.append(record)
     return flattened
-
-
-def verify_all(arg1, arg2):
-    count = 0
-    for i in range(len(arg1)):
-        if arg1[i] == arg2[i]:
-            count += 1
-    return True if count == len(arg1) else False

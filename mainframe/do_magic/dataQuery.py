@@ -6,7 +6,7 @@ def dbQuery(select_statement):
         connection = mysql.connector.connect(host='localhost',
                                              database='nba_facts',
                                              user='root',
-                                             password='dBPJJWa4gkBjBQZn')
+                                             password='dBPJJWa4gkBjBQZn', auth_plugin='mysql_native_password')
 
         if connection.is_connected():
             db_Info = connection.get_server_info()
