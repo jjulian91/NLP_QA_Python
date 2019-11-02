@@ -1,7 +1,4 @@
 Phrase,FK
-Games,7
-Starts,8
-Minutes,9
 Player Efficiency,10
 True Shooting Percent,11
 3 point attempt rate,12
@@ -93,3 +90,69 @@ Rebound Percentage,16
 3's,34
 3 point average,35
 average number of 3's,35
+start,53
+cease,54
+job,55
+big,56
+heavy,57
+born,58
+education,59
+capital,60
+state,61
+begin,53
+complete,54
+tall,56
+mass,57
+birth,58
+academy,59
+port,60
+country,61
+commence,53
+culminate,54
+birthday,58
+institute,59
+place,60
+region,61
+inaugurate,53
+expire,54
+name day,58
+alumni,59
+town,60
+community,61
+launch,53
+finish,54
+natal day,58
+institution,59
+federation,61
+appear,53
+end,54
+university,59
+nation,61
+drafted,53
+stop,54
+school,59
+union,61
+initiate,53
+quit,54
+instruction,59
+territory,61
+introduce,53
+halt,54
+open,53
+wrap up,54
+enter,53
+terminate,54
+call off,54
+pack it in,54
+pull the plug,54
+shut down,54
+wrap up,54
+discontinue,54
+height,56
+weight,57
+birth date,58
+college,59
+City,60
+State country,61
+when born,58
+where born,60
