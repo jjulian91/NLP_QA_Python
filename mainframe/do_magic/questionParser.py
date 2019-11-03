@@ -31,14 +31,12 @@ def parseQuestion(question):
     tokenized = voila.get_basewords(tokenized)
     for word in tokenized:
         if search_phrase_DB(word):
-            phrase = search_phrase_DB(word)
-            wordResults.append(phrase)
+            wordResults = search_phrase_DB(word, wordResults)
+
         elif search_player_dB(word):
-            player = search_player_dB(word)
-            playerResults.append(player)
+            playerResults = search_player_dB(word, playerResults)
         elif search_stats_DB(word):
-            stats = search_stats_DB(word)
-            statsResults.append(stats)
+            statsResults = search_stats_DB(word, statsResults)
         else:
             nonMatchedWord.append(word)
     category = "unknown"  # could be used for flag info or not whatever
@@ -118,25 +116,29 @@ def wordNetResults(nonMatched):
     return results
 
 
-def search_player_dB(word):
+def search_player_dB(word, nameResults):
     result = sqlQuery.dbQuery(
         "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
     if result:
-        return result
+        addToList(nameResults, result)
+
+    return nameResults
 
 
-def search_stats_DB(word):
+def search_stats_DB(word, statResults):
     result = sqlQuery.dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
     if result:
-        return result
+        addToList(statResults, result)
+    return statResults
 
-
-def search_phrase_DB(word):
+def search_phrase_DB(word, wordResults):
     result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
                               " like " + "'%" + word + "%'")
     if result:
-        return result
+        addToList(wordResults, result)
+
+    return wordResults
 
 
 def processResults(playerResults, nonMatchedNouns):
@@ -149,3 +151,7 @@ def processResults(playerResults, nonMatchedNouns):
             playerResults = answer.triangulate(playerResults)
     playerResults = list(answer.flatten(playerResults))
     return playerResults
+
+def addToList(resultsList, results):
+    for result in results:
+        resultsList.append(result)

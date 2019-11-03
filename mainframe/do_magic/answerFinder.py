@@ -2,23 +2,26 @@ import collections
 
 
 def triangulate(results):
-    flattened = []
     overlap = []
-    if len(results) > 0:
-        flattened = list(flatten(results))
     # todo made easier to read loop. old one is in 'OLD SHIT'. once confirmed. delete this line.
-    for j in range(len(flattened)):
-        for i in range(j + 1, (len(flattened))):
-            match = True
-            for k in range(1, (len(flattened[0]))):
-                if flattened[j][k] != flattened[i][k]:
-                    match = False
-                    break
-            if match:
-                overlap.append(flattened[j])
+    for j in range(len(results)):
+        for i in range(j + 1, (len(results))):
+            if compareTuples(results[i], results[j]):
+                overlap.append(results[j])
+
     return overlap
 
 
+
+def compareTuples(tuple1, tuple2):
+    i = 0
+    while(i < len(tuple1)):
+        if tuple1[i] == tuple2[i]:
+            i += 1
+        else:
+            return False
+
+    return True
 def flatten(l):
     for el in l:
         if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):
@@ -28,8 +31,6 @@ def flatten(l):
 
 
 output = []
-
-
 
 def reemovNestings(l):
     for i in l:

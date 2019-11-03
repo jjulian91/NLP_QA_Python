@@ -20,6 +20,7 @@ def tag_Sentence(tokenized):
 
 
 def spell_check(tokenized):
+def spell_check(tokenized):
     # begin spell check  This is causing more harm than good right now
     # spellchecks 1 word at a time so no need for loop
     spelledWords = check.correction(tokenized)
