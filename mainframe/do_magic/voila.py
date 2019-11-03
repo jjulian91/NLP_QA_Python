@@ -4,6 +4,7 @@ from spellchecker import SpellChecker
 from nltk.tag import StanfordPOSTagger
 from nltk.stem import WordNetLemmatizer
 
+
 counter = y = 0
 check = SpellChecker()
 def tag_Sentence(tokenized):
@@ -17,7 +18,6 @@ def tag_Sentence(tokenized):
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
     postaggedwords = stanfordPOS.tag(tokenized)
     return postaggedwords
-
 
 def spell_check(tokenized):
     # begin spell check  This is causing more harm than good right now
@@ -45,7 +45,6 @@ def spell_check(tokenized):
     else:
         return tokenized
 
-
 def get_basewords(tokenized):
     getBase = WordNetLemmatizer()
     baseWords = []
@@ -53,12 +52,10 @@ def get_basewords(tokenized):
         baseWords.append(getBase.lemmatize(word))
     return baseWords
 
-
 def get_stopwords(tokenized):
     stop_words = set(stopwords.words('english'))
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
-
 
 def runstat():
     global counter, y
@@ -67,7 +64,6 @@ def runstat():
     if value == 'y':
         y += 1
         return print(f'percentage accurate: {float(y / counter)}')
-
 
 # todo have not used this yet, may not need but leave it as is.
 def one_array(array):
@@ -79,11 +75,9 @@ def one_array(array):
             one.append(i)
     return one
 
-
 def singlequoteSQLfix(val):
     index = val.find("'")
     return val[:index] + "''" + val[index + 1:] if index != -1 else val
-
 
 # modifies the query values to make them sql safe search.. eg: d'angelo 3's
 def apostrophefix(words):
@@ -108,3 +102,7 @@ def apostrophefix(words):
     if words[len(words) - 1][0].find("''") == -1:
         words[len(words) - 1] = singlequoteSQLfix(words[len(words) - 1][0]), words[len(words) - 1][1]
     return words
+
+def addToList(resultsList, results):
+    for result in results:
+        resultsList.append(result)

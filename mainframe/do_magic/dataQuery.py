@@ -52,3 +52,15 @@ def dbInsert(statement):
             cursor.close()
             connection.close()
             # print("MySQL connection is closed")
+
+def search_player_dB(word):
+    return dbQuery(
+        "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
+
+def search_stats_DB(word):
+    return dbQuery(
+        "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
+
+def search_phrase_DB(word):
+    return  dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
+                              " like " + "'%" + word + "%'")
