@@ -74,9 +74,14 @@ def breakTie(searchMatch, nonMatched):
                 refined_word = voila.singlequoteSQLfix(refined_word)
                 for table in tableList:
                     # todo this is giving us issues need to find a way to search whole table for match.
-                    result = sqlQuery.dbQuery("select * from " + table + " where * like " + "'%" + refined_word + "%'")
+                    if table == "phrase":
+                        result = sqlQuery.dbQuery(
+                            "select * from " + table + " where Phrase like " + "'%" + refined_word + "%'")
+                    else:
+                        result = sqlQuery.dbQuery("select * from " + table + " where name like " + "'%" + refined_word + "%'")
                     if result:
                         voila.addToList(searchMatch, result)
+
     return searchMatch
 
 def flatten(l):
