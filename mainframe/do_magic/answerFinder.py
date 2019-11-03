@@ -16,6 +16,8 @@ def triangulate(results):
 def compareTuples(tuple1, tuple2):
     i = 0
     while(i < len(tuple1)):
+        print(tuple1[i] + tuple2[i])
+
         if tuple1[i] == tuple2[i]:
             i += 1
         else:
