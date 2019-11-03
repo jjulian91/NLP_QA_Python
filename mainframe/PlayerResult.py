@@ -13,3 +13,4 @@ class PlayerResult:
         self.country = country
 
     def somefunction(self, args):
+        pass

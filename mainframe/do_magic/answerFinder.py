@@ -1,40 +1,21 @@
-import random
 import collections
-import do_magic.voila as voila
 
 
 def triangulate(results):
-    # number_of_arrays = len(results)
-    # length_of_each = []
-    # for i in range(number_of_arrays):
-    #     length_of_each.append(len(results[i]))
-    #
-    #
     flattened = []
     overlap = []
     if len(results) > 0:
         flattened = list(flatten(results))
-    j = 0
-
-    #todo loop over flattened and check each record for a match of ALL entries in the "tuple"  add those matches to
-    # to the overlap function. This should solve 90% of problems going forward.
-    while j < len(flattened):
-        i = j+1
-        while i < len(flattened):
-            k = 1
+    # todo made easier to read loop. old one is in 'OLD SHIT'. once confirmed. delete this line.
+    for j in range(len(flattened)):
+        for i in range(j + 1, (len(flattened))):
             match = True
-            while k <(len(flattened[0])):
-                if flattened[i][k] == flattened[j][k]:
-                    k += 1
-                else:
+            for k in range(1, (len(flattened[0]))):
+                if flattened[j][k] != flattened[i][k]:
                     match = False
                     break
-
             if match:
                 overlap.append(flattened[j])
-            i += 1
-        j += 1
-
     return overlap
 
 
@@ -46,3 +27,29 @@ def flatten(l):
             yield el
 
 
+output = []
+
+
+
+def reemovNestings(l):
+    for i in l:
+        if type(i) == list:
+            reemovNestings(i)
+        else:
+            output.append(i)
+
+
+def get_output():
+    return output
+
+
+def reset_output():
+    global output
+    output = []
+
+
+def remove_single_tuple_within_list(array):
+    if isinstance(array[0], tuple):
+        return list(array[0])
+    else:
+        return array

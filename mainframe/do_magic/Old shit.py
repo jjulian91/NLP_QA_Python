@@ -56,3 +56,28 @@
     #     else:
     #         nonMatchedWord.append(noun)
     #
+
+
+
+#     OLD TRIANGULATION
+
+# j = 0
+# # todo loop over flattened and check each record for a match of ALL entries in the "tuple"  add those matches to
+# # to the overlap function. This should solve 90% of problems going forward.
+# while j < len(flattened):
+#     i = j + 1
+#     while i < len(flattened):
+#         k = 1
+#         match = True
+#         while k < (len(flattened[0])):
+#             if flattened[i][k] == flattened[j][k]:
+#                 k += 1
+#             else:
+#                 match = False
+#                 break
+#
+#         if match:
+#             overlap.append(flattened[j])
+#         i += 1
+#     j += 1
+

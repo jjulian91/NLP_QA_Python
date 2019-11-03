@@ -1,32 +1,21 @@
-# created to clean up main
-
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
 from spellchecker import SpellChecker
 from nltk.tag import StanfordPOSTagger
 from nltk.stem import WordNetLemmatizer
 
 counter = y = 0
 check = SpellChecker()
-
-
 def tag_Sentence(tokenized):
     import os
     jarpath = "C:/Program Files/Java/jdk-11.0.2/bin/java.exe"
     java_path = jarpath
     os.environ['JAVAHOME'] = java_path
-
     dirname = os.path.dirname(__file__)
     jar = os.path.join(dirname, '../../stanford-postagger-full-2018-10-16/stanford-postagger-3.9.2.jar')
     model = os.path.join(dirname, '../../stanford-postagger-full-2018-10-16/models/english-left3words-distsim.tagger')
-
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
-    #print(f'tokenized words:    {tokenized}')
-    # begin pos tagging
     postaggedwords = stanfordPOS.tag(tokenized)
-    #print(f'these are tagged words:      {postaggedwords}')
-
     return postaggedwords
 
 
@@ -58,32 +47,21 @@ def spell_check(tokenized):
 
 
 def get_basewords(tokenized):
-    # begin baseing
     getBase = WordNetLemmatizer()
-    # getBase =
     baseWords = []
     for word in tokenized:
         baseWords.append(getBase.lemmatize(word))
-
     return baseWords
 
 
 def get_stopwords(tokenized):
-    # stopwords
-
     stop_words = set(stopwords.words('english'))
     _stopwords = [words for words in tokenized if not words in stop_words]
-    #print(f'stop words to check for:    {_stopwords}')
-    # End getting stop words.
-
-    #
     return _stopwords
 
 
-# this will be used later to measure our stastics on how accurate our program performs
 def runstat():
     global counter, y
-    # fyi apparently counter++ is not a thing in python lol
     counter += 1
     value = input('Was this helpful? [y/N]: ')
     if value == 'y':
@@ -102,12 +80,10 @@ def one_array(array):
     return one
 
 
-# checks if theres an apostrophe e.g. D'angelo. Adds apostrophe for escape character in SQL --> d''angelo.
-# if there is NO apostrophe then returns word
-# todo this has helped tremendously
 def singlequoteSQLfix(val):
     index = val.find("'")
     return val[:index] + "''" + val[index + 1:] if index != -1 else val
+
 
 # modifies the query values to make them sql safe search.. eg: d'angelo 3's
 def apostrophefix(words):
