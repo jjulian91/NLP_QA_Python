@@ -64,68 +64,11 @@ def parseQuestion(question):
 
     # makes it 1 array
     if wordResults:
-        wordResults = answer.flatten(wordResults)
-
-    # Separates nouns from nonNouns.  Parses table for match.
-    # for word in tagged_sentence:
-    #     if word[1] == "NNP":
-    #         nouns.append(word[0])
-    #         category = "Person"
-    #     elif word[1] == "NN":
-    #         nouns.append(word[0])
-    #         words.append(word[0])
-    #     else:
-    #         words.append(word[0])
-
-    # searches for word in look up table.
-    # wordList = voila.get_stopwords(words)
-
-    # for word in wordList:
-    #     phrase_result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
-    #                                      " like " + "'%" + word + "%' COLLATE utf8_general_ci")
-    #     if phrase_result:
-    #         wordResults.append(phrase_result)
-    #     else:
-    #         nonMatchedWord.append(word)
-
-    # begins triangulation of all words (non proper nouns) from lookup table.
-    # wordResults = answer.triangulate(wordResults)
-
-    # if no results check for wordnet hits and triangulates.
-    # if len(wordResults) == 0:
-    #     wordResults = answer.triangulate(wordNetResults(nonMatchedWord))
-    #
-    # # ensures correct form of the
-    # if len(wordResults) > 1:
-    #     results = answer.triangulate(breakTie(nonMatchedWord))
-    #     if len(results) > 0:
-    #         wordResults.append(results)
-    #     wordResults = answer.triangulate(wordResults)
-    #
-    # if len(wordResults) > 0:
-    #     while isinstance(wordResults[0], tuple):
-    #         wordResults = answer.flatten(wordResults)
-
-    # todo insert check here to validate wordresults isn't empty
-    # if this is empty you can run candidates, then start looking at "bad returns".
-
-    # sets basic SQL begining
-    # selectStatment = "select * from player_data where name like "
-    #
-    # for table in tableList:
-    #     if table == wordResults[5]:
-    #         selectStatment = "select * from " + table + " where LOWER(name) LIKE LOWER"
-    #
-    # # searches for direct name look up from table returned from non-noun check.
-    # for noun in nouns:
-    #     result = sqlQuery.dbQuery(selectStatment + "('%" + noun + "%') COLLATE utf8_general_ci")
-    #     if result:
-    #         playerResults.append(result)
-    #     else:
-    #         nonMatchedWord.append(noun)
-    #
-    playerResults = processResults(playerResults, nonMatchedWord)
-
+        wordResults = processResults(wordResults, nonMatchedWord)
+    if playerResults:
+        playerResults = processResults(playerResults, nonMatchedWord)
+    if statsResults:
+        statsResults = processResults(statsResults, nonMatchedWord)
     # # this is ONLY FOR 1 to 1 look ups
     # # todo we might need to create an enum for flags  Could possibly use lemma searching for NOUNS.
     #
@@ -139,7 +82,6 @@ def parseQuestion(question):
     if len(playerResults) > 0:
         playerName = voila.singlequoteSQLfix(playerResults[0])
     elif len(statsResults) > 0:
-        print(statsResults[0])
         playerName = voila.singlequoteSQLfix(statsResults[0])
 
     tableName = voila.singlequoteSQLfix(wordResults[5])
@@ -193,21 +135,21 @@ def wordNetResults(nonMatched):
 
 def search_player_dB(word):
     result = sqlQuery.dbQuery(
-        "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%') COLLATE utf8_general_ci")
+        "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
     if result:
         return result
 
 
 def search_stats_DB(word):
     result = sqlQuery.dbQuery(
-        "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%') COLLATE utf8_general_ci")
+        "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
     if result:
         return result
 
 
 def search_phrase_DB(word):
     result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
-                              " like " + "'%" + word + "%' COLLATE utf8_general_ci")
+                              " like " + "'%" + word + "%'")
     if result:
         return result
 
@@ -222,16 +164,17 @@ def clean_up_N_arrays(array):
 def processResults(playerResults, nonMatchedNouns):
     playerResults = answer.triangulate(playerResults)
 
-    #
-    if len(playerResults) > 1:
+
+    if len(playerResults) > 0 and not isinstance(playerResults[0], list):
         results = answer.triangulate(breakTie(nonMatchedNouns))
         if len(results) > 0:
             playerResults.append(results)
-        playerResults = answer.triangulate(playerResults)
-
-    if len(playerResults) > 0:
-        while isinstance(playerResults[0], tuple):
-            playerResults = answer.flatten(playerResults)
+    playerResults = answer.triangulate(playerResults)
+    print("before")
+    print(playerResults)
+    playerResults = list(answer.flatten(playerResults))
+    print("after")
+    print(playerResults)
 
     return playerResults
     #
