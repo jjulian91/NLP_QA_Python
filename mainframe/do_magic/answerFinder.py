@@ -6,6 +6,7 @@ from nltk.corpus import wordnet
 
 output = []
 tableList = ["phrase", "player_data", "stats"]
+
 def return_tablename_with_player_name(wordResults, playerName):
     if playerName == "placeholder":
         return 0
@@ -40,7 +41,7 @@ def triangulate(results):
     else:
         return overlap
 
-def processResults(resultArray, nonMatchedNouns): #this must return a TUPLE, if NOT we will not give output
+def processResults(resultArray, nonMatchedWords): #this must return a TUPLE, if NOT we will not give output
     if len(resultArray) == 1:
         return resultArray[0] #returns tuple
     elif triangulate(resultArray):
@@ -48,12 +49,15 @@ def processResults(resultArray, nonMatchedNouns): #this must return a TUPLE, if 
     if len(resultArray) == 1:
         return resultArray[0]
     elif len(resultArray) > 1:
-        results = triangulate(breakTie(resultArray, nonMatchedNouns))
+        results = triangulate(breakTie(resultArray, nonMatchedWords)) #one call to break tie is enough I think?
         if results:
             if len(results) == 1:
                 return results[0]
         else:
-            return resultArray
+            if triangulate(wordNetResults(resultArray, nonMatchedWords)):
+                return processResults(triangulate(wordNetResults(resultArray, nonMatchedWords)), nonMatchedWords)
+            else:
+                return resultArray
 
 def breakTie(searchMatch, nonMatched):
     nonMatched = voila.get_stopwords(nonMatched)
@@ -69,6 +73,7 @@ def breakTie(searchMatch, nonMatched):
             if refined_word:
                 refined_word = voila.singlequoteSQLfix(refined_word)
                 for table in tableList:
+                    # todo this is giving us issues need to find a way to search whole table for match.
                     result = sqlQuery.dbQuery("select * from " + table + " where * like " + "'%" + refined_word + "%'")
                     if result:
                         voila.addToList(searchMatch, result)
@@ -101,17 +106,16 @@ def remove_single_tuple_within_list(array):
     else:
         return array
 
-def wordNetResults(nonMatched):
-    results = []
+def wordNetResults(resultArray, nonMatched):
+
     for word in nonMatched:
         for syn in wordnet.synsets(word):
             for lemmas in syn.lemmas():
-                print(f'lemmas: {lemmas.name()}')
-                result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
-                                          " like " + "'%" + lemmas.name() + "%'")
+                result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where LOWER(Phrase)"
+                                          " like " + "LOWER('%" + lemmas.name() + "%')")
                 if result:
-                    results.append(result)
+                    voila.addToList(resultArray, result)
                     print(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[1]})")
                     sqlQuery.dbInsert(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[1]})")
 
-    return results
+    return resultArray

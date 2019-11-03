@@ -81,3 +81,24 @@
 #         i += 1
 #     j += 1
 
+
+## stuff carlos had in question parser:
+
+# if wordResults:
+#     # todo why processResults on this??? when processresults it empties the array. made this instead
+#     answer.reemovNestings(wordResults)
+#     wordResults = answer.get_output()
+#     wordResults = answer.remove_single_tuple_within_list(wordResults)
+#     answer.reset_output()
+#     # wordResults = processResults(wordResults, nonMatchedWord)
+# if playerResults:
+#     playerResults = processResults(playerResults, nonMatchedWord)
+#     answer.reemovNestings(playerResults)
+#     playerResults = answer.get_output()
+#     playerResults = answer.remove_single_tuple_within_list(playerResults)
+#     answer.reset_output()
+# if statsResults:
+#     statsResults = processResults(statsResults, nonMatchedWord)
+
+# begin checking for triangulation of results
+
