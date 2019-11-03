@@ -13,10 +13,9 @@ def parseQuestion(question):
     statsResults = []
 
 
+    # DONE DO NOT MODIFY
     tokenized = voila.get_stopwords(tokenized)
     tokenized = voila.get_basewords(tokenized)
-
-    # DONE DO NOT MODIFY
     for word in tokenized:
         result = sqlQuery.search_phrase_DB(word)
         if result:
@@ -50,19 +49,32 @@ def parseQuestion(question):
     #     statsResults = processResults(statsResults, nonMatchedWord)
 
     # begin checking for triangulation of results
-    wordResults = answer.processResults(wordResults, nonMatchedWord) #processResults begins triangulation.
-    playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
-    statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
 
-    # todo this is the start of the switch statements!!
-    tableName = voila.singlequoteSQLfix(wordResults[5])
-
+    tableName = "placeholder"
     playerName = "placeholder"
-    if playerResults and tableName == "player_data":
-        playerName = voila.singlequoteSQLfix(playerResults[0])
-    elif statsResults and tableName == "stats":
-        playerName = voila.singlequoteSQLfix(statsResults[0])
 
+    wordResults = answer.processResults(wordResults, nonMatchedWord) #processResults begins triangulation.
+    #process results returns a tuple or list, if tuple we have triangulate, if not we have multiple entires.
+    if isinstance(wordResults, tuple):
+        tableName = voila.singlequoteSQLfix(wordResults[5])
+    else:
+        return "there were multiple hits for your query please limit query to only one field or stat at a time"
+
+
+    playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
+    if tableName == "player_data":
+        if isinstance(playerResults, tuple):
+            playerName = voila.singlequoteSQLfix(playerResults[0])
+        else:
+            return playerResults
+
+    statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
+    if tableName == "stats":
+        if isinstance(statsResults, tuple):
+            playerName = voila.singlequoteSQLfix(playerResults[0])
+        else:
+            return statsResults
+    # todo this is the start of the switch statements!!
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)
 
     if return_info == 0:

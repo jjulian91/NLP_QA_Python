@@ -16,18 +16,6 @@ def return_tablename_with_player_name(wordResults, playerName):
     finalIndex = wordResults[4]
     return finalAnswer[finalIndex]
 
-def triangulate(results):
-    overlap = []
-    # todo made easier to read loop. old one is in 'OLD SHIT'. once confirmed. delete this line.
-    for j in range(len(results)):
-        for i in range(j + 1, (len(results))):
-            if compareTuples(results[i], results[j]):
-                overlap.append(results[j])
-    if len(overlap) < 1:
-        return False
-    else:
-        return overlap
-
 def compareTuples(tuple1, tuple2):
     if len(tuple2) != len(tuple1):
         return False
@@ -40,19 +28,32 @@ def compareTuples(tuple1, tuple2):
 
     return True
 
-def flatten(l):
-    for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):
-            yield from flatten(el)
-        else:
-            yield el
+def triangulate(results):
+    overlap = []
+    # todo made easier to read loop. old one is in 'OLD SHIT'. once confirmed. delete this line.
+    for j in range(len(results)):
+        for i in range(j + 1, (len(results))):
+            if compareTuples(results[i], results[j]):
+                overlap.append(results[j])
+    if len(overlap) < 1:
+        return False
+    else:
+        return overlap
 
-def removeNestings(l):
-    for i in l:
-        if type(i) == list:
-            removeNestings(i)
+def processResults(resultArray, nonMatchedNouns): #this must return a TUPLE, if NOT we will not give output
+    if len(resultArray) == 1:
+        return resultArray[0] #returns tuple
+    elif triangulate(resultArray):
+        resultArray = triangulate(resultArray)
+    if len(resultArray) == 1:
+        return resultArray[0]
+    elif len(resultArray) > 1:
+        results = triangulate(breakTie(resultArray, nonMatchedNouns))
+        if results:
+            if len(results) == 1:
+                return results[0]
         else:
-            output.append(i)
+            return resultArray
 
 def breakTie(searchMatch, nonMatched):
     nonMatched = voila.get_stopwords(nonMatched)
@@ -73,6 +74,20 @@ def breakTie(searchMatch, nonMatched):
                         voila.addToList(searchMatch, result)
     return searchMatch
 
+def flatten(l):
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):
+            yield from flatten(el)
+        else:
+            yield el
+
+def removeNestings(l):
+    for i in l:
+        if type(i) == list:
+            removeNestings(i)
+        else:
+            output.append(i)
+
 def get_output():
     return output
 
@@ -85,18 +100,6 @@ def remove_single_tuple_within_list(array):
         return list(array[0])
     else:
         return array
-
-def processResults(resultArray, nonMatchedNouns):
-    if len(resultArray) == 1:
-        return resultArray[0]
-    elif triangulate(resultArray):
-        resultArray = triangulate(resultArray)
-    if len(resultArray) > 1:
-        results = triangulate(breakTie(resultArray, nonMatchedNouns))
-        if results:
-            return
-    else:
-        return resultArray
 
 def wordNetResults(nonMatched):
     results = []
