@@ -8,12 +8,11 @@ def triangulate(results):
         for i in range(j + 1, (len(results))):
             if compareTuples(results[i], results[j]):
                 overlap.append(results[j])
-
     return overlap
 
-
-
 def compareTuples(tuple1, tuple2):
+    if len(tuple2) != len(tuple1):
+        return False
     i = 0
     while(i < len(tuple1)):
         if tuple1[i] == tuple2[i]:
@@ -22,6 +21,7 @@ def compareTuples(tuple1, tuple2):
             return False
 
     return True
+
 def flatten(l):
     for el in l:
         if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):

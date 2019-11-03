@@ -33,13 +33,19 @@ def parseQuestion(question):
     tokenized = voila.get_basewords(tokenized)
 
     for word in tokenized:
-        wordResults = search_phrase_DB(word, wordResults)
-        if len(wordResults) == 0:
-            playerResults = search_player_dB(word, playerResults)
-        elif len(playerResults) == 0:
-            statsResults = search_stats_DB(word, statsResults)
-        elif len(statsResults) == 0:
-            nonMatchedWord.append(word)
+        result = search_phrase_DB(word)
+        if result:
+            addToList(wordResults, result)
+        else:
+            result = search_player_dB(word)
+            if result:
+                addToList(playerResults, result)
+            else:
+                result = search_stats_DB(word)
+                if result:
+                    addToList(statsResults, result)
+                else:
+                    nonMatchedWord.append(word)
     category = "unknown"  # could be used for flag info or not whatever
 
     if wordResults:
@@ -121,34 +127,25 @@ def wordNetResults(nonMatched):
     return results
 
 
-def search_player_dB(word, nameResults):
-    result = sqlQuery.dbQuery(
+def search_player_dB(word):
+    return sqlQuery.dbQuery(
         "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
-    if result:
-        addToList(nameResults, result)
-
-    return nameResults
 
 
-def search_stats_DB(word, statResults):
-    result = sqlQuery.dbQuery(
+def search_stats_DB(word):
+    return sqlQuery.dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
-    if result:
-        addToList(statResults, result)
-    return statResults
 
-def search_phrase_DB(word, wordResults):
-    result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
+
+def search_phrase_DB(word):
+    return  sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
                               " like " + "'%" + word + "%'")
-    if result:
-        addToList(wordResults, result)
 
-    return wordResults
+
 
 
 def processResults(playerResults, nonMatchedNouns):
     playerResults = answer.triangulate(playerResults)
-
     if len(playerResults) > 0 and not isinstance(playerResults[0], list):
         results = answer.triangulate(breakTie(nonMatchedNouns))
         if len(results) > 0:
