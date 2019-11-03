@@ -33,11 +33,11 @@ def parseQuestion(question):
     tokenized = voila.get_basewords(tokenized)
 
     for word in tokenized:
-        if search_phrase_DB(word, wordResults):
+        if len(search_phrase_DB(word, wordResults)) > 0:
             wordResults = search_phrase_DB(word, wordResults)
-        elif search_player_dB(word, playerResults):
+        elif len(search_player_dB(word, playerResults)) > 0:
             playerResults = search_player_dB(word, playerResults)
-        elif search_stats_DB(word, statsResults):
+        elif len(search_stats_DB(word, statsResults)) > 0:
             statsResults = search_stats_DB(word, statsResults)
         else:
             nonMatchedWord.append(word)
@@ -125,7 +125,7 @@ def wordNetResults(nonMatched):
 def search_player_dB(word, nameResults):
     result = sqlQuery.dbQuery(
         "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
-    print(result)
+    print(f"Name results : {result}")
     if result:
         addToList(nameResults, result)
 
@@ -135,7 +135,7 @@ def search_player_dB(word, nameResults):
 def search_stats_DB(word, statResults):
     result = sqlQuery.dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
-    print(result)
+    print(f"player results : {result}")
     if result:
         addToList(statResults, result)
     return statResults
@@ -143,7 +143,7 @@ def search_stats_DB(word, statResults):
 def search_phrase_DB(word, wordResults):
     result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
                               " like " + "'%" + word + "%'")
-    print(result)
+    print(f"phrase results : {result}")
     if result:
         addToList(wordResults, result)
 
