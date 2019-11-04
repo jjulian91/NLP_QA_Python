@@ -53,7 +53,7 @@ def get_basewords(tokenized):
     return baseWords
 
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words('english'))  - {'much', 'most', type(int), "where", "when"}
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
 

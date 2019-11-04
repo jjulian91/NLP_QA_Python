@@ -13,10 +13,10 @@ def parseQuestion(question):
 
     #remove the pesky "'s" from tokenized, and capture words
     for word in tokenized:
-        if word.lower() == ("where" or "when"): #may need to expand on these.
-            capturedWords.append(word)
-        if word.isnumeric():
-            capturedWords.append(word)
+        # if word.lower() == ("where" or "when"): #may need to expand on these.
+        #     capturedWords.append(word)
+        # if word.isnumeric():
+        #     capturedWords.append(word)
         if "\'" in word:
             tokenized.remove(word)
 
