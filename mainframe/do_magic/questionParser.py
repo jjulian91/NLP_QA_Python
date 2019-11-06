@@ -52,7 +52,7 @@ def parseQuestion(question):
     if isinstance(wordResults, tuple):
         tableName = voila.singlequoteSQLfix(wordResults[5])
     else:
-        # TODO put function HERE!!!!!!!!!!!!!
+        # TODO put what function here?
         wordResults = raw_input_to_N_tuples(raw_input_as_last_option, wordResults)
         if isinstance(wordResults, tuple):
             tableName = voila.singlequoteSQLfix(wordResults[5])
@@ -75,6 +75,14 @@ def parseQuestion(question):
             index_for_answer = wordResults[4]
             return statsResults[index_for_answer]
         else:
+            #todo I think this is where we would have multiple entries.  If so we need to capture all words which
+            # gave a hit for stats and put them into a list.  Then when we get to this point we need to implement
+            # N-Gram searching to try and find a DIRECT match.  IE:  "what was XX THREE POINT AVERAGE in XX"  ->  this will
+            # return many different hits from the stats table, but when we capture all words and then use those words
+            # in that order to the results we should only end up with one hit -- the difficulty here which we need to
+            # figure a way to capture and hold "points" as a single reference and get only a direct match -- which
+            # possibly can be handled by the N-Gram search because it is NOT a %LIKE% search.. it should only match
+            # those results which are an actual direct match to the word which was used to find all the other matches
             return statsResults
 
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)

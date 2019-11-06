@@ -38,7 +38,7 @@
     #     while isinstance(wordResults[0], tuple):
     #         wordResults = answer.flatten(wordResults)
 
-    # todo insert check here to validate wordresults isn't empty
+
     # if this is empty you can run candidates, then start looking at "bad returns".
 
     # sets basic SQL begining
@@ -62,7 +62,7 @@
 #     OLD TRIANGULATION
 
 # j = 0
-# # todo loop over flattened and check each record for a match of ALL entries in the "tuple"  add those matches to
+
 # # to the overlap function. This should solve 90% of problems going forward.
 # while j < len(flattened):
 #     i = j + 1
@@ -85,7 +85,7 @@
 ## stuff carlos had in question parser:
 
 # if wordResults:
-#     # todo why processResults on this??? when processresults it empties the array. made this instead
+
 #     answer.reemovNestings(wordResults)
 #     wordResults = answer.get_output()
 #     wordResults = answer.remove_single_tuple_within_list(wordResults)

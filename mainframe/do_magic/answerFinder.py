@@ -30,8 +30,7 @@ def compareTuples(tuple1, tuple2):
     return True
 
 def triangulate(results):
-    overlap = []
-    # todo made easier to read loop. old one is in 'OLD SHIT'. once confirmed. delete this line.
+    overlap = []s
     for j in range(len(results)):
         for i in range(j + 1, (len(results))):
             if compareTuples(results[i], results[j]):
@@ -78,7 +77,6 @@ def breakTie(searchMatch, nonMatched):
             if refined_word:
                 refined_word = voila.singlequoteSQLfix(refined_word)
                 for table in tableList:
-                    # todo this is giving us issues need to find a way to search whole table for match.
                     if table == "phrase":
                         result = sqlQuery.dbQuery(
                             "select * from " + table + " where Phrase like " + "'%" + refined_word + "%'")
