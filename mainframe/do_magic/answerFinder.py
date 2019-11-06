@@ -39,7 +39,12 @@ def triangulate(results):
     if len(overlap) < 1:
         return False
     else:
+        overlap = removeDuplicates(overlap)
         return overlap
+
+
+def removeDuplicates(lst):
+    return [t for t in (set(tuple(i) for i in lst))]
 
 def processResults(resultArray, nonMatchedWords): #this must return a TUPLE, if NOT we will not give output
     if len(resultArray) == 1:
@@ -84,33 +89,6 @@ def breakTie(searchMatch, nonMatched):
 
     return searchMatch
 
-def flatten(l):
-    for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes, tuple)):
-            yield from flatten(el)
-        else:
-            yield el
-
-def removeNestings(l):
-    for i in l:
-        if type(i) == list:
-            removeNestings(i)
-        else:
-            output.append(i)
-
-def get_output():
-    return output
-
-def reset_output():
-    global output
-    output = []
-
-def remove_single_tuple_within_list(array):
-    if isinstance(array[0], tuple):
-        return list(array[0])
-    else:
-        return array
-
 def wordNetResults(resultArray, nonMatched):
 
     for word in nonMatched:
@@ -124,3 +102,10 @@ def wordNetResults(resultArray, nonMatched):
                     sqlQuery.dbInsert(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[1]})")
 
     return resultArray
+
+
+def find_with_year(year, list):
+    for row in list:
+        for element in row:
+            if element == int(year):
+                return row

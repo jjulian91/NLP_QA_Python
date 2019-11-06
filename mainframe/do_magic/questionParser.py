@@ -3,6 +3,7 @@ import do_magic.voila as voila
 import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
 
+
 def parseQuestion(question):
     tokenized = nltk.word_tokenize(question)
     nonMatchedWord = []  # list of words (NOT NOUNS) which may be used to break ties with spell checker.
@@ -11,7 +12,7 @@ def parseQuestion(question):
     statsResults = []
     capturedWords = []
 
-    #remove the pesky "'s" from tokenized, and capture words
+    # remove the pesky "'s" from tokenized, and capture words
     for word in tokenized:
         # if word.lower() == ("where" or "when"): #may need to expand on these.
         #     capturedWords.append(word)
@@ -20,7 +21,7 @@ def parseQuestion(question):
         if "\'" in word:
             tokenized.remove(word)
 
-# DONE DO NOT MODIFY
+    # DONE DO NOT MODIFY
     tokenized = voila.get_stopwords(tokenized)
     tokenized = voila.get_basewords(tokenized)
     voila.addToList(tokenized, capturedWords)
@@ -31,40 +32,46 @@ def parseQuestion(question):
             voila.addToList(wordResults, result)
         else:
             result = sqlQuery.search_player_dB(word)
+            result_stat = sqlQuery.search_stats_DB(word)
             if result:
                 voila.addToList(playerResults, result)
+            if result_stat:
+                voila.addToList(statsResults, result_stat)
             else:
-                result = sqlQuery.search_stats_DB(word)
-                if result:
-                    voila.addToList(statsResults, result)
-                else:
-                    nonMatchedWord.append(word)
-# END DONE DO NOT MODIFY
+                nonMatchedWord.append(word)
+    # END DONE DO NOT MODIFY
 
+    year = voila.check_for_year(tokenized)
     tableName = "placeholder"
     playerName = "placeholder"
 
-    wordResults = answer.processResults(wordResults, nonMatchedWord) #processResults begins triangulation.
-    #process results returns a tuple or list, if tuple we have triangulate, if not we have multiple entires.
+    wordResults = answer.processResults(wordResults, nonMatchedWord)  # processResults begins triangulation.
+    # process results returns a tuple or list, if tuple we have triangulate, if not we have multiple entires.
     print(wordResults)
     if isinstance(wordResults, tuple):
         tableName = voila.singlequoteSQLfix(wordResults[5])
     else:
         return "there were multiple hits for your query please limit query to only one field or stat at a time"
 
-    playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
     if tableName == "player_data":
+        playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
         if isinstance(playerResults, tuple):
             playerName = voila.singlequoteSQLfix(playerResults[0])
         else:
             return playerResults
 
-    statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
     if tableName == "stats":
+        statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
+        if year:
+            statsResults = answer.find_with_year(year, statsResults)
         if isinstance(statsResults, tuple):
-            playerName = voila.singlequoteSQLfix(playerResults[0])
+            playerName = voila.singlequoteSQLfix(statsResults[0])
+        #     THE CONNECTION GOES HERE
+            index_for_answer = wordResults[4]
+            return statsResults[index_for_answer]
         else:
             return statsResults
+
 
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)
 

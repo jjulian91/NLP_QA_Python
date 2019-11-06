@@ -4,9 +4,10 @@ from spellchecker import SpellChecker
 from nltk.tag import StanfordPOSTagger
 from nltk.stem import WordNetLemmatizer
 
-
 counter = y = 0
 check = SpellChecker()
+
+
 def tag_Sentence(tokenized):
     import os
     jarpath = "C:/Program Files/Java/jdk-11.0.2/bin/java.exe"
@@ -19,11 +20,9 @@ def tag_Sentence(tokenized):
     postaggedwords = stanfordPOS.tag(tokenized)
     return postaggedwords
 
+
 def spell_check(tokenized):
-    # begin spell check  This is causing more harm than good right now
-    # spellchecks 1 word at a time so no need for loop
     spelledWords = check.correction(tokenized)
-    # spellcheck 'worked'
     if spelledWords != tokenized:
         print(f'did you mean, {spelledWords}?')
         inputval = input('[y/N]: ')
@@ -45,6 +44,7 @@ def spell_check(tokenized):
     else:
         return tokenized
 
+
 def get_basewords(tokenized):
     getBase = WordNetLemmatizer()
     baseWords = []
@@ -52,10 +52,14 @@ def get_basewords(tokenized):
         baseWords.append(getBase.lemmatize(word))
     return baseWords
 
+
+# we can create/delete stop words as we please to better suit our domain.
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english'))  - {'much', 'most', type(int), "where", "when"}
+    stop_words = set(stopwords.words('english')) - {'much', 'most', type(int), "where", "when"}
+    stop_words.add('go' and '?')
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
+
 
 def runstat():
     global counter, y
@@ -65,44 +69,21 @@ def runstat():
         y += 1
         return print(f'percentage accurate: {float(y / counter)}')
 
-# todo have not used this yet, may not need but leave it as is.
-def one_array(array):
-    one = []
-    for i in array:
-        if isinstance(i, list):
-            one_array(i)
-        else:
-            one.append(i)
-    return one
 
 def singlequoteSQLfix(val):
     index = val.find("'")
     return val[:index] + "''" + val[index + 1:] if index != -1 else val
 
-# modifies the query values to make them sql safe search.. eg: d'angelo 3's
-def apostrophefix(words):
-    for i, word in enumerate(words):
-        if i >= len(words) - 1:
-            break
-        j = i + 1
-        # case where three's splits into [three] & ['s], we make it one word [three's] and add the apostrophe to it ->
-        # [three''s] for sql safe search. then we remove the tuple ('s, POS) and return ("three''s", "null")
-        if words[j][1] == "POS" and words[i][1] == "NN" or words[j][1] == "POS" and words[i][1] == "CD":
-            concat = words[i][0] + words[j][0]
-            concat = singlequoteSQLfix(concat)
-            words[i] = (concat, "null")
-            words.remove(words[j])
-        else:
-            # if the above is not the case e.g d'angelo. just fix it --> d''angelo and return it along with its part of
-            # speech
-            words[i] = (singlequoteSQLfix(words[i][0]), words[i][1])
-    # case where o'neal is last in the query --> o''neal
-    # if last value -> [three''s] already has been modified then skip. but for cases where o'neal is last . make it
-    # o''neal
-    if words[len(words) - 1][0].find("''") == -1:
-        words[len(words) - 1] = singlequoteSQLfix(words[len(words) - 1][0]), words[len(words) - 1][1]
-    return words
 
 def addToList(resultsList, results):
     for result in results:
         resultsList.append(result)
+
+
+def check_for_year(tokenized):
+    for i in range(len(tokenized)):
+        if tokenized[i].isdigit():
+            if len(tokenized[i]) == 4:
+                return tokenized[i]
+    else:
+        return False
