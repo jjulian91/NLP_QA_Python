@@ -25,11 +25,12 @@ def parseQuestion(question):
     tokenized = voila.get_stopwords(tokenized)
     tokenized = voila.get_basewords(tokenized)
     voila.addToList(tokenized, capturedWords)
-
+    raw_input_as_last_option = ''
     for word in tokenized:
         result = sqlQuery.search_phrase_DB(word)
         if result:
             voila.addToList(wordResults, result)
+            raw_input_as_last_option = raw_input_as_last_option + word + ' '
         else:
             result = sqlQuery.search_player_dB(word)
             result_stat = sqlQuery.search_stats_DB(word)
@@ -40,7 +41,7 @@ def parseQuestion(question):
             else:
                 nonMatchedWord.append(word)
     # END DONE DO NOT MODIFY
-
+    raw_input_as_last_option = raw_input_as_last_option.strip()
     year = voila.check_for_year(tokenized)
     tableName = "placeholder"
     playerName = "placeholder"
@@ -51,7 +52,11 @@ def parseQuestion(question):
     if isinstance(wordResults, tuple):
         tableName = voila.singlequoteSQLfix(wordResults[5])
     else:
-        return "there were multiple hits for your query please limit query to only one field or stat at a time"
+        # TODO put function HERE!!!!!!!!!!!!!
+        wordResults = raw_input_to_N_tuples(raw_input_as_last_option, wordResults)
+        if isinstance(wordResults, tuple):
+            tableName = voila.singlequoteSQLfix(wordResults[5])
+        # return "there were multiple hits for your query please limit query to only one field or stat at a time"
 
     if tableName == "player_data":
         playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
@@ -66,12 +71,11 @@ def parseQuestion(question):
             statsResults = answer.find_with_year(year, statsResults)
         if isinstance(statsResults, tuple):
             playerName = voila.singlequoteSQLfix(statsResults[0])
-        #     THE CONNECTION GOES HERE
+            #     THE CONNECTION GOES HERE
             index_for_answer = wordResults[4]
             return statsResults[index_for_answer]
         else:
             return statsResults
-
 
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)
 
@@ -79,3 +83,9 @@ def parseQuestion(question):
         return "unable to find match"
 
     return return_info
+
+
+def raw_input_to_N_tuples(string, list_of_tuples):
+    for row in list_of_tuples:
+        if row[0] == string:
+            return row
