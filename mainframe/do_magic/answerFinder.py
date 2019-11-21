@@ -30,7 +30,7 @@ def compareTuples(tuple1, tuple2):
     return True
 
 def triangulate(results):
-    overlap = []s
+    overlap = []
     for j in range(len(results)):
         for i in range(j + 1, (len(results))):
             if compareTuples(results[i], results[j]):
