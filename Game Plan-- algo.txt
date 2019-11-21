@@ -1,31 +1,35 @@
-updated 11/1/2019
+updated 11/21/2019
 #todo update this as we are implementing methods. I know it is alot to remember to do but leave these comments as a reminder to update this.
 
 #todo UPDATE THIS WHEN DONE!
 by jonathan
 
 1.
-capture edge case flags (When, where, who, years, etc subject to expansion). 
+capture edge case flags (When, where, who, years, etc subject to expansion).
+//todo
+1a. we are working on max min. they will be the same process the only difference will be the SQL statement.
 
-2.
+
+
+2.   DONE
 //These can be implemented as a function which can be called with either nonmatchedwords or nonmatchednouns to get an answer. 
 //these two can be implemented in any order just test which one returns the most accurate results the most times.
 
 Implement Word net. It will be ran IFF no matches on words or nouns.
 Implement spellcheck IFF no matches on words or nouns 
 
-3.
+3.  Working -- in progress need cases to fail so we can test the premise of how wordnet finds and inserts words later
 before monday we need to update the lookup_table to include the basic column titles from all the tables (ommitted for testing of one to one function)
 
 
-4.
-Start working on the switch statment to handle issues like edge cases and exceptions: //this is not a full or encompasing list by any means.
+4.  SOME ARE DONE //not actually implementing the switch at this point till we do code clean up and can identify what will be reused
+Start working on the switch statement to handle issues like edge cases and exceptions: //this is not a full or encompasing list by any means.
 	switch(flag):
-		case flag1: basic one to one look up select statement
-		case flag2: one to one with year
-		case flag3: no lookup table match return all noun match information
-		case flag4: edge case 1
-		case flag5: edge case 2
+		case flag1: basic one to one look up select statement                             CASE DONE
+		case flag2: one to one with year                                                  CASE DONE
+		case flag3: no lookup table match return all noun match information               NOT DONE
+		case flag4: MIN/MAX                                                               Needs completion
+		case flag5: comparison                                                            Needs completion
 		case flagN: edge case N
 
 //(other non matches will also need to be explored.  no noun match, or no match at all. )

@@ -94,10 +94,11 @@ def wordNetResults(resultArray, nonMatched):
             for lemmas in syn.lemmas():
                 result = sqlQuery.dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where LOWER(Phrase)"
                                           " like " + "LOWER('%" + lemmas.name() + "%')")
-                if result:
+                #triangualtion needs to happen here.  Or else we can get multiple false positives. #todo
+                if result[1]:
                     voila.addToList(resultArray, result)
-                    print(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[1]})")
-                    sqlQuery.dbInsert(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[1]})")
+                    print(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[2]})")
+                    sqlQuery.dbInsert(f"INSERT INTO phrase (Phrase, FK) VALUES ({word}, {result[2]})")
 
     return resultArray
 
