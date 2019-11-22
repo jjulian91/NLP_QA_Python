@@ -41,7 +41,6 @@ def triangulate(results):
         overlap = removeDuplicates(overlap)
         return overlap
 
-
 def removeDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 

@@ -13,16 +13,19 @@ def parseQuestion(question):
     capturedWords = []
 
     # remove the pesky "'s" from tokenized, and capture words
-    # todo talk about why some of this is commented out? was it moved? We can add the search for max or min (or similar)
-    #  then we can start looking at pulling out things which will be applied to all functions and what is only applied to
-    #  specific cases.  and only have to create some small changes and still use the rest of the information which was
-    #  already defined for the most of the project.
+    # todo set up chunking or similar to identify comparisons between players so triangulation doesn't
+    #  always have to be called.
+    year = 0
+    min = False
+    max = False
     for word in tokenized:
-        # if word.lower() == ("where" or "when"): #may need to expand on these.
-        #     capturedWords.append(word)
-        # if word.isnumeric():
-        #     capturedWords.append(word)
-        if "\'" in word:
+        if word.isnumeric():
+            year = word
+        elif word.lower() == "min" or "least" or "lowest":
+            min = True
+        elif word.lower() == "max" or "highest" or "most":
+            max = True
+        elif "\'" in word:
             tokenized.remove(word)
 
     # DONE DO NOT MODIFY
@@ -35,6 +38,16 @@ def parseQuestion(question):
         if result:
             voila.addToList(wordResults, result)
             raw_input_as_last_option = raw_input_as_last_option + word + ' '
+            if min:
+                if year != 0:
+                    result_stat = sqlQuery.search_stats_min_DB(word, year)
+                else:
+                    return "please specify a year"
+            elif max:
+                if year != 0:
+                    result_stat = sqlQuery.search_stats_max_DB(word, year)
+                else:
+                    return "please specify a year"
         else:
             result = sqlQuery.search_player_dB(word)
             result_stat = sqlQuery.search_stats_DB(word)
@@ -52,7 +65,6 @@ def parseQuestion(question):
 
     wordResults = answer.processResults(wordResults, nonMatchedWord)  # processResults begins triangulation.
     # process results returns a tuple or list, if tuple we have triangulate, if not we have multiple entires.
-    print(wordResults)
     if isinstance(wordResults, tuple):
         tableName = voila.singlequoteSQLfix(wordResults[5])
     else:
@@ -72,13 +84,14 @@ def parseQuestion(question):
         statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
         if year:
             statsResults = answer.find_with_year(year, statsResults)
+        if not isinstance(statsResults, tuple):
+            statsResults = voila.get_most_recent(statsResults)
         if isinstance(statsResults, tuple):
             playerName = voila.singlequoteSQLfix(statsResults[0])
             #     THE CONNECTION GOES HERE
             index_for_answer = wordResults[4]
             return statsResults[index_for_answer]
         else:
-            #todo this is where we need to do the "most recent entry"
             return statsResults
 
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)

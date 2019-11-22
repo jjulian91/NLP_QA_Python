@@ -7,19 +7,12 @@ by jonathan
 1.
 capture edge case flags (When, where, who, years, etc subject to expansion).
 //todo
-1a. we are working on max min. they will be the same process the only difference will be the SQL statement.
+1a. we are working on max min. they will be the same process the only difference will be the SQL statement. (p1) in progress
 
+2. Temporality -- get most recent result if year not specified. (p1) in  progress
 
+3.  Working -- in progress need cases to fail so we can test the premise of how wordnet finds and inserts words later (P3)
 
-2.   DONE
-//These can be implemented as a function which can be called with either nonmatchedwords or nonmatchednouns to get an answer. 
-//these two can be implemented in any order just test which one returns the most accurate results the most times.
-
-Implement Word net. It will be ran IFF no matches on words or nouns.
-Implement spellcheck IFF no matches on words or nouns 
-
-3.  Working -- in progress need cases to fail so we can test the premise of how wordnet finds and inserts words later
-before monday we need to update the lookup_table to include the basic column titles from all the tables (ommitted for testing of one to one function)
 
 
 4.  SOME ARE DONE //not actually implementing the switch at this point till we do code clean up and can identify what will be reused
@@ -27,14 +20,10 @@ Start working on the switch statement to handle issues like edge cases and excep
 	switch(flag):
 		case flag1: basic one to one look up select statement                             CASE DONE
 		case flag2: one to one with year                                                  CASE DONE
-		case flag3: no lookup table match return all noun match information               NOT DONE
-		case flag4: MIN/MAX                                                               Needs completion
-		case flag5: comparison                                                            Needs completion
+		case flag3: no lookup table match return all noun match information               NOT DONE (p2)
+		case flag4: MIN/MAX                                                               Needs completion (p1) in progress
+		case flag5: comparison                                                            Needs completion (p1)
 		case flagN: edge case N
-
-//(other non matches will also need to be explored.  no noun match, or no match at all. )
-
-The general structure of what is ran between //the user based on the type of results we have found.
 
 tagger abbreviation cheat-sheat:
     https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html

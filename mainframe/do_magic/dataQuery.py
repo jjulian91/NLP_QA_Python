@@ -1,6 +1,9 @@
 import mysql.connector
 from mysql.connector import Error
+import do_magic.answerFinder as answer
 
+
+#todo refactor the search -- do non %like% search first.. if no result then do %like%.
 
 def dbQuery(select_statement):
     try:
@@ -66,6 +69,27 @@ def search_player_dB(word):
 def search_stats_DB(word):
     return dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
+
+
+#work min first --- max will be the exact same
+
+def search_stats_max_DB(word, searchYear):
+    return dbQuery(
+        "select max(word) from stats where Year = searchYear")
+
+
+#todo get this to a single result so we can resolve the column to get.  once the column is identified we will copy function
+# to the max and change the key word.
+def search_stats_min_DB(word, searchYear):
+    #search for phrase to find column -> get column name from result and plug into where clause
+    result = search_phrase_DB(word)
+    wordAsArray = []
+    wordAsArray.append(word)
+    if len(result) > 1:
+        result = answer.processResults(result, wordAsArray)
+    #get result to single tuple -- extract index 4
+    return dbQuery(
+        "SELECT * FROM stats WHERE "+ result[4] +" =  ( SELECT MIN(word) FROM stats ) AND Year = "+ searchYear)
 
 
 def search_phrase_DB(word):

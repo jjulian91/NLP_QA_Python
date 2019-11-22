@@ -44,6 +44,12 @@ def spell_check(tokenized):
     else:
         return tokenized
 
+def get_most_recent(statresults): #finish implementing
+    max = statresults[0]
+    for entry in statresults:
+        if entry[2] > max[2]:
+            max = entry
+    return max
 
 def get_basewords(tokenized):
     getBase = WordNetLemmatizer()
@@ -55,7 +61,7 @@ def get_basewords(tokenized):
 
 # we can create/delete stop words as we please to better suit our domain.
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english')) - {'much', 'most', type(int), "where", "when"}
+    stop_words = set(stopwords.words('english')) - {type(int), "where", "when"}
     stop_words.add('go' and '?')
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
