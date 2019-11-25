@@ -70,26 +70,23 @@ def search_stats_DB(word):
     return dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
 
-
-#work min first --- max will be the exact same
-
 def search_stats_max_DB(word, searchYear):
     return dbQuery(
-        "select max(word) from stats where Year = searchYear")
+        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+word+" != 'Unknown') "
+                                                                                "AND Year = "+ searchYear + " LIMIT 1")
 
-
-#todo get this to a single result so we can resolve the column to get.  once the column is identified we will copy function
-# to the max and change the key word.
-def search_stats_min_DB(word, searchYear):
-    #search for phrase to find column -> get column name from result and plug into where clause
-    result = search_phrase_DB(word)
-    wordAsArray = []
-    wordAsArray.append(word)
-    if len(result) > 1:
-        result = answer.processResults(result, wordAsArray)
-    #get result to single tuple -- extract index 4
+def search_stats_max_no_year_DB(word):
     return dbQuery(
-        "SELECT * FROM stats WHERE "+ result[4] +" =  ( SELECT MIN(word) FROM stats ) AND Year = "+ searchYear)
+        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
+
+def search_stats_min_DB(word, searchYear):
+    return dbQuery(
+        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') AND Year = "+ searchYear + " LIMIT 1")
+
+def search_stats_min_no_year_DB(word):
+    return dbQuery(
+        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
+
 
 
 def search_phrase_DB(word):
