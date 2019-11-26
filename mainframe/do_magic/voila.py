@@ -61,7 +61,7 @@ def get_basewords(tokenized):
 
 # we can create/delete stop words as we please to better suit our domain.
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english')) - {type(int), "where", "when"}
+    stop_words = set(stopwords.words('english'))
     stop_words.add('go' and '?')
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
@@ -86,10 +86,5 @@ def addToList(resultsList, results):
         resultsList.append(result)
 
 
-def check_for_year(tokenized):
-    for i in range(len(tokenized)):
-        if tokenized[i].isdigit():
-            if len(tokenized[i]) == 4:
-                return tokenized[i]
-    else:
-        return False
+
+

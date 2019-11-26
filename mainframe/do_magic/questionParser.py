@@ -4,6 +4,27 @@ import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
 from nltk.corpus import wordnet
 
+"""
+    NERsearch find people:
+        search for people in DB
+        if person:
+            person1 = person
+
+    NERsearch find field:
+        search for field in Look up table:
+            if field:
+                stat = field
+
+    if person and person2:
+        comparison
+    elif person:
+        if min/max:
+            get min/max stat
+        else: get stat
+
+    else:
+        get min/max based on flag
+"""
 
 def parseQuestion(question):
     tokenized = nltk.word_tokenize(question)
@@ -21,9 +42,19 @@ def parseQuestion(question):
 
     min = False
     max = False
+    when = False
+    where = False
+    year = 0
     for word in tokenized:
         if "\'" in word:
             tokenized.remove(word)
+        elif word == "when":
+            when = True
+        elif word == "where":
+            where = True
+        elif word.isnumeric:
+            if word > 1949 and word < 2019:
+                year = word
         else:
             for element in minimumQualifiers:
                 if word.lower() == element:
@@ -55,11 +86,12 @@ def parseQuestion(question):
 
 
     raw_input_as_last_option = raw_input_as_last_option.strip()
-    year = voila.check_for_year(tokenized)
     tableName = "placeholder"
     playerName = "placeholder"
 
-    tempResults = sqlQuery.search_phrase_DB(raw_input_as_last_option)
+
+    #function 1 start
+    tempResults = sqlQuery.search_phrase_DB_exact_match(raw_input_as_last_option)
     if tempResults:
         wordResults = tempResults
     else:
@@ -72,24 +104,28 @@ def parseQuestion(question):
         if isinstance(wordResults, tuple):
             tableName = voila.singlequoteSQLfix(wordResults[5])
         # return "there were multiple hits for your query please limit query to only one field or stat at a time"
+    #function 1 end
 
-    if tableName == "player_data":
+    #begin switch/IF statements
+    if tableName == "player_data": #switch case
+        #function 2
         playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
         if isinstance(playerResults, tuple):
             playerName = voila.singlequoteSQLfix(playerResults[0])
         else:
             return playerResults
-
-    if tableName == "stats":
+        #end function 2
+    if tableName == "stats": #switch case
+        #function 3
         if min:
-            if year:
+            if year > 0:
                 voila.addToList(statsResults, sqlQuery.search_stats_min_DB(wordResults[3], year))
                 return statsResults[0][0]
             else:
                 voila.addToList(statsResults, sqlQuery.search_stats_min_no_year_DB(wordResults[3]))
                 return statsResults[0][0]
         elif max:
-            if year:
+            if year > 0:
                 voila.addToList(statsResults, sqlQuery.search_stats_max_DB(wordResults[3], year))
                 return statsResults[0][0]
             else:
@@ -97,9 +133,13 @@ def parseQuestion(question):
                 return statsResults[0][0]
         else:
             statsResults = answer.processResults(statsResults, nonMatchedWord)  # processResults begins triangulation.
-        if year:
+        if year > 0:
             statsResults = answer.find_with_year(year, statsResults)
-        if not isinstance(statsResults, tuple):
+        elif max:
+            search max of results #max of array
+        elif min:
+            search min of results #min of array
+        elif not isinstance(statsResults, tuple):
             statsResults = voila.get_most_recent(statsResults)
         if isinstance(statsResults, tuple):
             playerName = voila.singlequoteSQLfix(statsResults[0])
@@ -108,6 +148,9 @@ def parseQuestion(question):
             return statsResults[index_for_answer]
         else:
             return statsResults
+            #end function 3
+
+
 
     return_info = answer.return_tablename_with_player_name(wordResults, playerName)
 

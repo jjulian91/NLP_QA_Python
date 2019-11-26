@@ -60,6 +60,9 @@ def dbInsert(statement):
             connection.close()
             # print("MySQL connection is closed")
 
+def search_phrase_DB(word):
+    return dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
+                   " like " + "'%" + word + "%'")
 
 def search_player_dB(word):
     return dbQuery(
@@ -69,6 +72,10 @@ def search_player_dB(word):
 def search_stats_DB(word):
     return dbQuery(
         "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
+
+def search_stats_DB_exact_match(word): #duplicate for playerDB and Phrase DB
+    return dbQuery(
+        "select * from stats where LOWER(name) = LOWER ("+ word + ")")
 
 def search_stats_max_DB(word, searchYear):
     return dbQuery(
@@ -89,6 +96,4 @@ def search_stats_min_no_year_DB(word):
 
 
 
-def search_phrase_DB(word):
-    return dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
-                   " like " + "'%" + word + "%'")
+

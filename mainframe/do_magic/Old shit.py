@@ -1,4 +1,16 @@
-# Separates nouns from nonNouns.  Parses table for match.
+'''def check_for_year(tokenized):
+    for i in range(len(tokenized)):
+        if tokenized[i].isdigit():
+            if len(tokenized[i]) == 4:
+                return tokenized[i]
+    else:
+        return False
+
+'''
+
+
+
+#Separates nouns from nonNouns.  Parses table for match.
     # for word in tagged_sentence:
     #     if word[1] == "NNP":
     #         nouns.append(word[0])
