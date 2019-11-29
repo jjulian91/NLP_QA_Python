@@ -115,7 +115,7 @@ def get_basewords(tokenized):
 
 # we can create/delete stop words as we please to better suit our domain.
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english')) - {"where"}
+    stop_words = set(stopwords.words('english')) - {"where", "over"}
     stop_words.add("go")
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
