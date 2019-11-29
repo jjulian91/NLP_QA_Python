@@ -3,6 +3,10 @@ from nltk.corpus import stopwords
 from spellchecker import SpellChecker
 from nltk.tag import StanfordPOSTagger
 from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag
+from nltk.tokenize import word_tokenize
+from nltk.chunk import conlltags2tree
+from nltk.tree import Tree
 
 counter = y = 0
 check = SpellChecker()
@@ -19,6 +23,56 @@ def tag_Sentence(tokenized):
     stanfordPOS = StanfordPOSTagger(model, jar, encoding='utf-8')
     postaggedwords = stanfordPOS.tag(tokenized)
     return postaggedwords
+
+# Process text
+def process_text(txt_file):
+	token_text = word_tokenize(txt_file)
+	return token_text
+
+# NLTK POS and NER taggers
+def nltk_tagger(token_text):
+    tagged = nltk.pos_tag(token_text)
+    ne_tagged = nltk.ne_chunk(tagged)
+    return (ne_tagged)
+
+# Tag tokens with standard NLP BIO tags
+def bio_tagger(ne_tagged):
+		bio_tagged = []
+		prev_tag = "O"
+		for token, tag in ne_tagged:
+			if tag == "O": #O
+				bio_tagged.append((token, tag))
+				prev_tag = tag
+				continue
+			if tag != "O" and prev_tag == "O": # Begin NE
+				bio_tagged.append((token, "B-"+tag))
+				prev_tag = tag
+			elif prev_tag != "O" and prev_tag == tag: # Inside NE
+				bio_tagged.append((token, "I-"+tag))
+				prev_tag = tag
+			elif prev_tag != "O" and prev_tag != tag: # Adjacent NE
+				bio_tagged.append((token, "B-"+tag))
+				prev_tag = tag
+		return bio_tagged
+
+# Create tree
+def stanford_tree(bio_tagged):
+	tokens, ne_tags = zip(*bio_tagged)
+	pos_tags = [pos for token, pos in pos_tag(tokens)]
+
+	conlltags = [(token, pos, ne) for token, pos, ne in zip(tokens, pos_tags, ne_tags)]
+	ne_tree = conlltags2tree(conlltags)
+	return ne_tree
+
+# Parse named entities from tree
+def structure_ne(ne_tree):
+	ne = []
+	for subtree in ne_tree:
+		if type(subtree) == Tree: # If subtree is a noun chunk, i.e. NE != "O"
+			ne_label = subtree.label()
+			ne_string = " ".join([token for token, pos in subtree.leaves()])
+			ne.append((ne_string, ne_label))
+	return ne
 
 
 def spell_check(tokenized):
@@ -61,8 +115,8 @@ def get_basewords(tokenized):
 
 # we can create/delete stop words as we please to better suit our domain.
 def get_stopwords(tokenized):
-    stop_words = set(stopwords.words('english'))
-    stop_words.add('go' and '?')
+    stop_words = set(stopwords.words('english')) - {"where"}
+    stop_words.add("go")
     _stopwords = [words for words in tokenized if not words in stop_words]
     return _stopwords
 

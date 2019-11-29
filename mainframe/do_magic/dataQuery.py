@@ -64,18 +64,19 @@ def search_phrase_DB(word):
     return dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where Phrase"
                    " like " + "'%" + word + "%'")
 
+def search_EXACT_phrase(word):
+    return  dbQuery("select * from phrase join lookup_table as LU on phrase.FK=LU.PK where LOWER(Phrase) = LOWER(" + "'" + word + "')")
+
+
 def search_player_dB(word):
-    return dbQuery(
-        "select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
+    return dbQuery("select * from player_data where LOWER(name) LIKE LOWER ('%" + word + "%')")
 
 
 def search_stats_DB(word):
-    return dbQuery(
-        "select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
+    return dbQuery("select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
 
 def search_stats_DB_exact_match(word): #duplicate for playerDB and Phrase DB
-    return dbQuery(
-        "select * from stats where LOWER(name) = LOWER ("+ word + ")")
+    return dbQuery("select * from stats where name = "+ word + "")
 
 def search_stats_max_DB(word, searchYear):
     return dbQuery(
@@ -84,11 +85,11 @@ def search_stats_max_DB(word, searchYear):
 
 def search_stats_max_no_year_DB(word):
     return dbQuery(
-        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
+        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
 
 def search_stats_min_DB(word, searchYear):
     return dbQuery(
-        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') AND Year = "+ searchYear + " LIMIT 1")
+        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') AND Year = "+ searchYear + " LIMIT 1")
 
 def search_stats_min_no_year_DB(word):
     return dbQuery(
