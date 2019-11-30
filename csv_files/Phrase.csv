@@ -1,158 +1,261 @@
 Phrase,FK
-Player Efficiency,10
-True Shooting Percent,11
-3 point attempt rate,12
-free throw rate,13
-Offensive Rebound Percent,14
-Defensive Rebound Percent,15
-True Rebound Percentage,16
-Assist Percent,17
-Steal Percentage,18
-Block Percent,19
-Turn Over Percent,20
-Usage Percentage,21
-Offensive Win Shares,23
-Defensive win share,24
-win shares,25
-win share per 48 minutes,26
-Defensive box plus minus,28
-box plus minus,29
-Value over replacement,30
-Field Goal,31
-Field Goal average,32
-Field Goal percent,33
-three point,34
-three point average,35
-3 point percentage,36
-2 pointer,37
-two point average,38
-two point percent,39
-effective Field Goal Percent,40
-Free throw,41
-free throw average,42
-free throw percent,43
-Offensive Rebound,44
-Defensive Rebound,45
-Total Rebounds,46
-assists,47
-Steals,48
-Blocks,49
-Turn Overs,50
-Fouls,51
-points,52
+G,7
 Games Played,7
-games Started,8
-Minutes Played,9
+games play,7
+GS,8
+games started,8
+games start,8
+starting,8
+MP,9
+minutes Played,9
+minutes play,9
+minutes playing,9
+PER,10
+Player Efficiency,10
+effective,10
+efficiency,10
+TS%,11
+True Shooting Percent,11
 True shooting percentage,11
-3 point attempts,12
-Offensive Rebound Percentage,14
-Defensive Rebound Percentage,15
-Rebound Percent,16
-Assist Percentage,17
-Steal Percent,18
-Block Percentage,19
-Turn Over Percentage,20
-Usage Percent,21
-Offensive Win share,23
-defensive win shares,24
-win share per 48,26
-Defensive box plus/minus,28
-box plus/minus,29
-Field Goals,31
-average Field Goals,32
-Percent of Field Goals,33
-three's,34
-average number of three's,35
-three point Percentage,36
-two pointer,37
-2 point average,38
-two point percentage,39
-effective Field goal Percent,40
-free throw percentage,43
-Rebounds,46
-assist,47
-Personal Fouls,51
 shooting percent,11
-three point attempt rate,12
-True Rebound Percent,16
-win per 48 mins,26
-Field Goal percentage,33
-three pointer,34
-average number of three pointers,35
-three percentage,36
-2 point percent,39
 shooting percentage,11
+3Par,12
+3 point attempt rate,12
+3 point attempts,12
+three point attempt rate,12
 three point attempts,12
+FTr,13
+free throw rate,13
+rate of free throws,13
+ORB%,14
+Offensive Rebound Percentage,14
+Offensive Rebound Percent,14
+percent rebounds offense,14
+DRB%,15
+Defensive Rebound Percent,15
+Defensive Rebound Percentage,15
+percent rebounds defense,15
+TRB%,16
+True Rebound Percentage,16
+Rebound Percent,16
+True Rebound Percent,16
 Rebound Percentage,16
+AST%,17
+Assist Percent,17
+Assist Percentage,17
+STL%,18
+Steal Percentage,18
+Steal Percent,18
+BLK%,19
+Block Percent,19
+Block Percentage,19
+TOV%,20
+Turn Over Percentage,20
+Turn Over Percent,20
+USG%,21
+Usage Percentage,21
+Usage Percent,21
+percent used,21
+OWS,23
+Offensive Win Shares,23
+Offensive Win share,23
+DWS,24
+defensive win shares,24
+Defensive win share,24
+WS,25
+win shares,25
+overall win share,25
+WS/48,26
+win share per 48 minutes,26
+win share per 48,26
+win per 48 mins,26
+DBPM,28
+Defensive box plus minus,28
+Defensive box plus/minus,28
+BPM,29
+box plus minus,29
+box plus/minus,29
+VORP,30
+Value over replacement,30
+replacement value,30
+value,30
+FG,31
+Field Goal,31
+Field Goals,31
+FGA,32
+average Field Goals,32
+Field Goal average,32
+average number of field goals,32
+FG%,33
+Field Goal percent,33
+Percent of Field Goals,33
+Field Goal percentage,33
+3p,34
+three's,34
+three point,34
+three pointer,34
 3 pointer,34
-3 percentage,36
-2 point percentage,39
 3's,34
+threes,34
+3PA,35
+average number of three's,35
+three point average,35
+average number of three pointers,35
 3 point average,35
 average number of 3's,35
-start,53
-cease,54
-job,55
-big,56
-heavy,57
-born,58
-education,59
-capital,60
-state,61
+3P%,36
+3 point percentage,36
+three point Percentage,36
+three percentage,36
+3 percentage,36
+2p,37
+2 pointer,37
+two pointer,37
+twos,37
+2's,37
+2pa,38
+two point average,38
+2 point average,38
+2p%,39
+two point percent,39
+two point percentage,39
+2 point percent,39
+2 point percentage,39
+eFG%,40
+effective Field Goal Percent,40
+effective Field Goal Percentage,40
+FT,41
+Free throw,41
+FTA,42
+free throw average,42
+FT%,43
+free throw percent,43
+free throw percentage,43
+ORB,44
+Offensive Rebound,44
+rebounds offense,44
+DRB,45
+Defensive Rebound,45
+rebounds defense,45
+TRB,46
+Total Rebounds,46
+Rebounds,46
+overall rebounds,46
+AST,47
+assists,47
+assist,47
+overall assists,47
+total assists,47
+number assists,47
+STL,48
+Steals,48
+overall steals,48
+total steals,48
+number steals,48
+BLK,49
+Blocks,49
+overall blocks,49
+number of block,49
+total blocks,49
+TOV,50
+Turn Overs,50
+overall turn overs,50
+number turn overs,50
+total turn overs,50
+PF,51
+Fouls,51
+Personal Fouls,51
+number fouls,51
+total fouls,51
+overall fouls,51
+PTS,52
+points,52
+total points,52
+number of points,52
+overall points,52
+year_start,53
+start playing,53
 begin,53
-complete,54
-tall,56
-mass,57
-birth,58
-academy,59
-port,60
-country,61
-commence,53
-culminate,54
-birthday,58
-institute,59
-place,60
-region,61
+enter nba,53
 inaugurate,53
-expire,54
-name day,58
-alumni,59
-town,60
-community,61
 launch,53
-finish,54
-natal day,58
-institution,59
-federation,61
 appear,53
-end,54
-university,59
-nation,61
 drafted,53
-stop,54
-school,59
-union,61
 initiate,53
-quit,54
-instruction,59
-territory,61
 introduce,53
-halt,54
 open,53
-wrap up,54
 enter,53
+first year,53
+draft year,53
+year_end,54
+complete,54
+retire,54
+culminate,54
+leave nba,54
+finish,54
+end,54
+stop,54
+quit,54
+halt,54
+wrap up,54
 terminate,54
 call off,54
 pack it in,54
-pull the plug,54
-shut down,54
-wrap up,54
-discontinue,54
+last year,54
+retirement year,54
+year retire,54
+when retire,54
+pos,55
+job,55
+position,55
 height,56
+shortest,56
+tall,56
+height,56
+taller,56
+shorter,56
+tallest,56
 weight,57
+heavy,57
+mass,57
+weight,57
+heavier,57
+heaviest,57
+lightest,57
+lighter,57
+weighs,57
+birth_date,58
+born,58
+birth,58
+birthday,58
+name day,58
+natal day,58
 birth date,58
-college,59
-City,60
-State country,61
 when born,58
+college,59
+education,59
+academy,59
+institute,59
+alumni,59
+institution,59
+university,59
+school,59
+instruction,59
+college,59
+city,60
+capital,60
+port,60
+place,60
+town,60
+City,60
 where born,60
+state/county,61
+state,61
+country,61
+region,61
+community,61
+federation,61
+nation,61
+union,61
+territory,61
+State country,61
