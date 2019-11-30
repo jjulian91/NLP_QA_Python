@@ -88,6 +88,7 @@ def n_gramplayerLookup(playernamewithlike):
 
 def parseQuestion(question):
     personhit = attempt_one(question)
+
     if not personhit: personhit = throwname_atDB(question)
     elif not personhit: return getMinMax(question)
     else: question = removeName_fromQuery(personhit, question)
