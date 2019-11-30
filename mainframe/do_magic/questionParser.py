@@ -42,8 +42,6 @@ def checkifhit(dict: dict):
     for i in dict.values():
         if len(i[0]) == 0 and len(i[1]) == 0: return True
 
-
-
 def removeName_fromQuery(personhit, question: str):
     for person in personhit.keys():
         if person.lower() in question: question = question.replace(person.lower(), '')
@@ -57,35 +55,39 @@ def attempt_one(question: str):
     if "\'s" in tokenized: tokenized.remove("\'s")
     if "s" in tokenized: tokenized.remove("s")
     j = 0
+    stringg = ''
+    for ss in tokenized:
+        stringg = stringg + ss + " "
     dict = {}
     for i in range(j+1, len(tokenized)):
-        x = "how tall is " + voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(tokenized[i].capitalize())
-        y = voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(tokenized[i].capitalize())
-        if nerPersonTagging(x):
-            name, stat, player = nerPersonTagging(x)
-            if name and stat and player:
+        x = "how tall is " + voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(
+            tokenized[i].capitalize())
+        y = voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(
+            tokenized[i].capitalize())
+        if 'shaq' in y.lower():
+            ngram = n_gramplayerLookup('shaq')
+            if ngram:
+                name, stat, player = ngram
                 dict[name] = [stat, player]
-        elif n_gramplayerLookup(y):
-            name, stat, player = n_gramplayerLookup(y)
-            if name and stat and player:
-                dict[name] = [stat, player]
-        j+=1
-    # if dict: return dict
-    if dict:
-        c = verifyInput_toDict(tokenized, dict)
-        return c
+        else:
+            NerTag = nerPersonTagging(x)
+            if  NerTag:
+                name, stat, player = NerTag
+                if name and stat and player: dict[name] = [stat, player]
+            else:
+                ngram = n_gramplayerLookup(y)
+                if ngram:
+                    if y[len(y)-1 ] =="s": y = y[:len(y)-1]
+                    name, stat, player = ngram
+                    if name and stat and player:
+                        y = nltk.word_tokenize(y.lower())
+                        itemcount = 0
+                        for item in y:
+                            if item in name.lower():itemcount+=1
+                        if itemcount == len(y):dict[name] = [stat, player]
+        j += 1
+    if dict: return dict
     else: return False
-
-def verifyInput_toDict(tokenized: list, dict: dict):
-    sentence = ''
-    for i in tokenized:
-        sentence = sentence + i + ' '
-    keyset = set()
-    val = {}
-    for key in dict.keys():
-        if key.lower() in sentence:
-            val[key] = dict.get(key)
-    return val
 
 def n_gramplayerLookup(playernamewithlike):
     x  = sqlQuery.search_stats_DB(playernamewithlike)
@@ -93,8 +95,8 @@ def n_gramplayerLookup(playernamewithlike):
     if x and y:
         name = y[0][0]
         return name,x,y
-    elif throwname_atDB(playernamewithlike):
-        namefound = throwname_atDB(playernamewithlike)
+    else: namefound = throwname_atDB(playernamewithlike)
+    if namefound:
         namefound = voila.singlequoteSQLfix(namefound)
         x = sqlQuery.search_stats_DB(namefound)
         y = sqlQuery.search_player_dB(namefound)
@@ -108,12 +110,10 @@ def n_gramplayerLookup(playernamewithlike):
 
 
 def parseQuestion(question):
-    # if nerPersonTagging(question): personhit = nerPersonTagging(question)
-    if attempt_one(question): personhit = attempt_one(question)
-    elif throwname_atDB(question): personhit = throwname_atDB(question)
-
-    else: return "unable to find match"
-    if personhit: question = removeName_fromQuery(personhit, question)
+    personhit = attempt_one(question)
+    if not personhit: personhit = throwname_atDB(question)
+    elif not personhit: return "unable to find match"
+    else: question = removeName_fromQuery(personhit, question)
     tokenized = nltk.word_tokenize(question)
 
     nonMatchedWord = []  # list of words (NOT NOUNS) which may be used to break ties with spell checker.
@@ -129,15 +129,12 @@ def parseQuestion(question):
     max = False
     who = False
     when = False
-    location = False
     year = False
     for word in tokenized:
         if "\'" in word:
             tokenized.remove(word)
         elif word == "when" or word == "year":
             when = True
-        elif word == "where":
-            location = True
         elif word == "who":
             who = True
         elif word.isnumeric():
@@ -149,7 +146,7 @@ def parseQuestion(question):
     tokenized = voila.get_stopwords(tokenized)
     PRE_basewords = tokenized
     tokenized = voila.get_basewords(tokenized)
-    voila.addToList(tokenized, capturedWords)
+    # voila.addToList(tokenized, capturedWords)
     if personhit:
         if find_searchTable_givenPerson(tokenized): tableInfo,tableName = find_searchTable_givenPerson(tokenized)
         elif find_searchTable_givenPerson(PRE_basewords): tableInfo,tableName = find_searchTable_givenPerson(PRE_basewords)
@@ -183,11 +180,11 @@ def parseQuestion(question):
         # else:
         #     # old route
         #     val = stats_true(min, max, year, statsResults, wordResults, nonMatchedWord)
-    return_info = answer.return_tablename_with_player_name(wordResults, playerName)
-    if return_info == 0:
-            return "unable to find match"
+    # return_info = answer.return_tablename_with_player_name(wordResults, playerName)
+    # if return_info == 0:
+    #         return "unable to find match"
 
-    return return_info
+    return None
 
 
 # 11/26-- we still use this function
@@ -251,6 +248,8 @@ def player_data_true(playerResults, nonMatchedWord):
     else:
         return playerResults
     # end function 2
+
+def max_from_playerData_returnPerson(personhit:dict, tableInfo): pass
 
 def getPlayerData(personhit: dict, tableInfo,min, max, year):
     if min and year: pass
