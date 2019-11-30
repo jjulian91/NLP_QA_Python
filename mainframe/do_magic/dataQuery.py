@@ -85,22 +85,25 @@ def search_stats_DB_noLike(word):
 def search_stats_DB_exact_match(word): #duplicate for playerDB and Phrase DB
     return dbQuery("select * from stats where name = "+ word + "")
 
-def search_stats_max_DB(word, searchYear):
+
+
+# the following functions require word being the RESOLVED column NAME from the stats table.
+def search_stats_max_DB(columnName, searchYear):
     return dbQuery(
-        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+word+" != 'Unknown') "
+        "SELECT * FROM stats WHERE "+ columnName +" = ( SELECT MAX("+columnName+") FROM stats WHERE "+columnName+" != 'Unknown') "
                                                                                 "AND Year = "+ searchYear + " LIMIT 1")
 
-def search_stats_max_no_year_DB(word):
+def search_stats_max_no_year_DB(columnName):
     return dbQuery(
-        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MAX("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
+        "SELECT * FROM stats WHERE "+ columnName +" = ( SELECT MAX("+columnName+") FROM stats WHERE "+ columnName +" != 'Unknown') LIMIT 1")
 
-def search_stats_min_DB(word, searchYear):
+def search_stats_min_DB(columnName, searchYear):
     return dbQuery(
-        "SELECT * FROM stats WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') AND Year = "+ searchYear + " LIMIT 1")
+        "SELECT * FROM stats WHERE "+ columnName +" = ( SELECT MIN("+columnName+") FROM stats WHERE "+ columnName +" != 'Unknown') AND Year = "+ searchYear + " LIMIT 1")
 
-def search_stats_min_no_year_DB(word):
+def search_stats_min_no_year_DB(columnName):
     return dbQuery(
-        "SELECT * FROM stats  WHERE "+ word +" = ( SELECT MIN("+word+") FROM stats WHERE "+ word +" != 'Unknown') LIMIT 1")
+        "SELECT * FROM stats  WHERE "+ columnName +" = ( SELECT MIN("+columnName+") FROM stats WHERE "+ columnName +" != 'Unknown') LIMIT 1")
 
 
 

@@ -3,29 +3,6 @@ import do_magic.voila as voila
 import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
 
-"""
-    NERsearch find people:
-        search for people in DB
-        if person:
-            person1 = person
-
-    NERsearch find field:
-        search for field in Look up table:
-            if field:
-                stat = field
-
-    if person and person2:
-        comparison
-    elif person:
-        if min/max:
-            get min/max stat
-        else: get stat
-
-    else:
-        get min/max based on flag
-"""
-
-
 def nerPersonTagging(question: str):
     find_persons = voila.structure_ne(voila.nltk_tagger(voila.process_text(question)))
     find_persons = [i[0] for i in find_persons]
@@ -112,7 +89,7 @@ def n_gramplayerLookup(playernamewithlike):
 def parseQuestion(question):
     personhit = attempt_one(question)
     if not personhit: personhit = throwname_atDB(question)
-    elif not personhit: return "unable to find match"
+    elif not personhit: return getMinMax(question)
     else: question = removeName_fromQuery(personhit, question)
     tokenized = nltk.word_tokenize(question)
 
@@ -446,3 +423,8 @@ def throwname_atDB(question):
         return namehit
 
     return False
+
+def getMinMax(question):
+    #question parse find year if applicable, and buzz words.
+    # find the column NAME.
+    # db query.find min/max with/out year.
