@@ -15,6 +15,7 @@ def nerPersonTagging(question: str):
     if not find_persons: return False
     return dict
 
+
 def checkifhit(dict: dict):
     for i in dict.values():
         if len(i[0]) == 0 and len(i[1]) == 0: return True
@@ -87,12 +88,26 @@ def n_gramplayerLookup(playernamewithlike):
 
 
 def parseQuestion(question):
+    questionSplit = question.split()
+    columnNames = ["G", "GS", "MP", "PER", "TS%", "3Par", "FTr", "ORB%", "DRB%", "TRB%", "AST%", "STL%", "BLK%", "TOV%",
+                   "USG%", "OWS", "DWS", "WS", "WS/48", "DBPM", "BPM", "VORP", "FG", "FGA", "FG%", "3p", "3PA", "3P%",
+                   "2p", "2pa", "2p%", "eFG%", "FT", "FTA", "FT%", "ORB", "DRB", "TRB", "AST", "STL", "BLK", "TOV", "PF",
+                   "PTS", "year_start", "year_end", "position", "height", "weight", "birth_date", "college", "city",
+                   "state/county"]
+    setfromquestion = set(questionSplit)
+    columnNames = set(columnNames)
+    columnNames = columnNames.intersection(setfromquestion)
+    if columnNames:
+        for name in columnNames:
+            if name in question: question = question.replace(name, '')
+
+
     personhit = attempt_one(question)
     if not personhit: personhit = throwname_atDB(question)
     elif not personhit: return getMinMax(question)
     else: question = removeName_fromQuery(personhit, question)
-    tokenized = nltk.word_tokenize(question)
 
+    tokenized = nltk.word_tokenize(question)
     minimumQualifiers = ["minimum", "min", "least", "lowest", "smallest", "shortest", "bottom","lesser", "less", "worst"]
     maximumQualifiers = ["maximum", "most", "max", "highest", "biggest", "tallest", "top", "heaviest", "higher", "better", "taller", "many", "more", "best"]
     tableName = "placeholder"
@@ -101,7 +116,7 @@ def parseQuestion(question):
     who = False
     when = False
     year = False
-    for word in tokenized:
+    for i,word in enumerate(tokenized):
         if "\'" in word:
             tokenized.remove(word)
         elif word == "when" or word == "year":
@@ -111,9 +126,14 @@ def parseQuestion(question):
         elif word.isnumeric():
             if 1949 < int(word) < 2019 or int(word) < 5: year = int(word)
             else: return "we do not have stats for that year"
-        elif word.lower() in minimumQualifiers: min = True
-        elif word.lower() in maximumQualifiers: max = True
-
+        elif word.lower() in minimumQualifiers:
+            min = True
+            if tokenized[i] == "min":
+                tokenized[i] = "minimum"
+        elif word.lower() in maximumQualifiers:
+            max = True
+            if tokenized[i] == "max":
+                tokenized[i] = "maximum"
     tokenized = voila.get_stopwords(tokenized)
     PRE_basewords = tokenized
     tokenized = voila.get_basewords(tokenized)
@@ -127,7 +147,7 @@ def parseQuestion(question):
         elif tableName == "stats":
             return getStats(personhit, tableInfo, min, max, year, who, when)
     else:
-        minmaxValuegeneral = getMinMax(tokenized, PRE_basewords,max, min, year)
+        minmaxValuegeneral = getMinMax(tokenized, PRE_basewords,max, min, year, columnNames)
         if minmaxValuegeneral: return minmaxValuegeneral
     return "unable to find match"
 
@@ -202,7 +222,6 @@ def max_from_playerData_returnPerson(personhit:dict, tableInfo):
             if fix_value.find(' ') != -1: fix_value = fix_value.replace(' ', '.')
             val[person] = float(fix_value)
         else: val[person] = float(values[0][tableInfo[4]])
-    print(val)
     truemax = max(val, key=val.get)
     edge =  edgecase(val)
     return edge if edge else truemax
@@ -415,22 +434,30 @@ def throwname_atDB(question):
 
     return False
 
-def getMinMax(tokenized, PRE_basewords, maxx, minn, year):
+def getMinMax(tokenized, PRE_basewords, maxx, minn, year, columnName):
+    if columnName:
+        column = columnName.pop()
+        if column not in tokenized:
+            tokenized.append(column)
     tablehit = get_searchTable_andName(tokenized)
     if not tablehit: tablehit = get_searchTable_andName(PRE_basewords)
     if tablehit: tableInfo, tableName = tablehit
     if year: year = str(year)
 
+    sqlColumn = tableInfo[3]
+    if sqlColumn.find("%") > 0 : sqlColumn = sqlColumn.replace(sqlColumn, "`"+sqlColumn+"`")
+
+
     if maxx and year:
-        val = sqlQuery.search_stats_max_DB(tableInfo[3], year)
+        val = sqlQuery.search_stats_max_DB(sqlColumn, year)
         return val[0][0] if val else False
     elif minn and year:
-        val =  sqlQuery.search_stats_min_DB(tableInfo[3], year)
+        val =  sqlQuery.search_stats_min_DB(sqlColumn, year)
         return val[0][0] if val else False
     elif minn:
-        val =  sqlQuery.search_stats_min_no_year_DB(tableInfo[3])
+        val =  sqlQuery.search_stats_min_no_year_DB(sqlColumn)
         return val[0][0] if val else False
     elif maxx:
-        val =  sqlQuery.search_stats_max_no_year_DB(tableInfo[3])
+        val =  sqlQuery.search_stats_max_no_year_DB(sqlColumn)
         return val[0][0] if val else False
     else: return False

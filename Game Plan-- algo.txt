@@ -1,30 +1,4 @@
 updated 11/21/2019
 #todo update this as we are implementing methods. I know it is alot to remember to do but leave these comments as a reminder to update this.
 
-#todo UPDATE THIS WHEN DONE!
-by jonathan
-
-1.
-capture edge case flags (When, where, who, years, etc subject to expansion).
-//todo
-1a. we are working on max min. they will be the same process the only difference will be the SQL statement. (p1) in progress
-
-2. Temporality -- get most recent result if year not specified. (p1) in  progress
-
-3.  Working -- in progress need cases to fail so we can test the premise of how wordnet finds and inserts words later (P3)
-
-
-
-4.  SOME ARE DONE //not actually implementing the switch at this point till we do code clean up and can identify what will be reused
-Start working on the switch statement to handle issues like edge cases and exceptions: //this is not a full or encompasing list by any means.
-	switch(flag):
-		case flag1: basic one to one look up select statement                             CASE DONE
-		case flag2: one to one with year                                                  CASE DONE
-		case flag3: no lookup table match return all noun match information               NOT DONE (p2)
-		case flag4: MIN/MAX                                                               Needs completion (p1) in progress
-		case flag5: comparison                                                            Needs completion (p1)
-		case flagN: edge case N
-
-tagger abbreviation cheat-sheat:
-    https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
-    https://www.sketchengine.eu/penn-treebank-tagset/
+#todo UPDATE THIS SHIT!
