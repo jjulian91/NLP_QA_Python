@@ -250,6 +250,13 @@ def player_data_true(playerResults, nonMatchedWord):
     # end function 2
 
 def max_from_playerData_returnPerson(personhit:dict, tableInfo): pass
+    # lows = [0.0, 0.0]
+    # val = {}
+    # for person in personhit.values():
+    #     person = person[0]
+    #     if person[1][tableInfo[4]]
+
+
 
 def getPlayerData(personhit: dict, tableInfo,min, max, year):
     if min and year: pass
