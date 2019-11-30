@@ -9,10 +9,13 @@ def main():
               "\tin the statistics kept year over year.  This system will not return general team information such as\n "
               "\t\"who won the NBA finals?\".  ")
         value = input('Enter in a question: ')
-        result = parse.parseQuestion(value)
-        print(result)
         #print(f'RESULTS: {result}') if len(result) >= 1 else print('There are no results that match this question')
-        voila.runstat()
+        try:
+            result = parse.parseQuestion(value)
+            print(result)
+            voila.runstat()
+        except:
+            print("Sorry an error has occurred, please try to revise your question")
 
 
 if __name__ == '__main__':
