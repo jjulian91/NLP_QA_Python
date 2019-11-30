@@ -194,7 +194,6 @@ def player_data_true(playerResults, nonMatchedWord):
     # end function 2
 
 def max_from_playerData_returnPerson(personhit:dict, tableInfo):
-    lows = [0.0, 0.0]
     val = {}
     for person, values in personhit.items():
         values = values[1]
@@ -202,16 +201,36 @@ def max_from_playerData_returnPerson(personhit:dict, tableInfo):
             if values[0][tableInfo[4]].find('\'')!= -1: fix_value = values[0][tableInfo[4]].replace('\'', '')
             if fix_value.find(' ') != -1: fix_value = fix_value.replace(' ', '.')
             val[person] = float(fix_value)
-        val[person] = float(values[0][tableInfo[4]])
+        else: val[person] = float(values[0][tableInfo[4]])
     print(val)
+    truemax = max(val, key=val.get)
+    edge =  edgecase(val)
+    return edge if edge else truemax
 
+def min_from_playerData_returnPerson(personhit:dict, tableInfo):
+    val = {}
+    for person, values in personhit.items():
+        values = values[1]
+        if not isinstance(values[0][tableInfo[4]], int):
+            if values[0][tableInfo[4]].find('\'') != -1: fix_value = values[0][tableInfo[4]].replace('\'', '')
+            if fix_value.find(' ') != -1: fix_value = fix_value.replace(' ', '.')
+            val[person] = float(fix_value)
+        else:
+            val[person] = float(values[0][tableInfo[4]])
+    print(val)
+    truemax = min(val, key=val.get)
+    edge = edgecase(val)
+    return edge if edge else truemax
 
+def edgecase(val):
+    l = [v for v in val.values()]
+    return "they are the same" if len(set(l)) == 1 else False
 
 def getPlayerData(personhit: dict, tableInfo,min, max, year):
     if min and year: pass
-    elif min and not year: pass
+    elif min and not year: return min_from_playerData_returnPerson(personhit, tableInfo)
     elif max and year: pass
-    elif max and not year: max_from_playerData_returnPerson(personhit, tableInfo)
+    elif max and not year: return max_from_playerData_returnPerson(personhit, tableInfo)
     elif year and not max and not min: pass
     elif not year and not max and not min:
         for person in personhit.values():
