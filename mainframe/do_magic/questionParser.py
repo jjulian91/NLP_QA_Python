@@ -2,7 +2,6 @@ import nltk
 import do_magic.voila as voila
 import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
-from nltk.corpus import wordnet
 
 """
     NERsearch find people:
@@ -32,8 +31,10 @@ def nerPersonTagging(question: str):
     find_persons = [i[0] for i in find_persons]
     dict = {}
     if find_persons:
-        for person in find_persons: dict[person] = [sqlQuery.search_stats_DB(person), sqlQuery.search_player_dB(person)]
-        if checkifhit(dict): return False
+        for person in find_persons:
+            dict[person] = [sqlQuery.search_stats_DB_noLike(person), sqlQuery.search_player_dB_noLike(person)]
+            if checkifhit(dict): return False
+            else: return  person, sqlQuery.search_stats_DB_noLike(person), sqlQuery.search_player_dB_noLike(person)
     if not find_persons: return False
     return dict
 
@@ -45,14 +46,72 @@ def checkifhit(dict: dict):
 
 def removeName_fromQuery(personhit, question: str):
     for person in personhit.keys():
-        if person in question: question = question.replace(person, '')
+        if person.lower() in question: question = question.replace(person.lower(), '')
     x = question.find("\'s")
     if x: question = question.replace("\'s", '')
     return question
 
+def attempt_one(question: str):
+    tokenized = nltk.word_tokenize(question)
+    tokenized = voila.get_stopwords(tokenized)
+    if "\'s" in tokenized: tokenized.remove("\'s")
+    if "s" in tokenized: tokenized.remove("s")
+    j = 0
+    dict = {}
+    for i in range(j+1, len(tokenized)):
+        x = "how tall is " + voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(tokenized[i].capitalize())
+        y = voila.singlequoteSQLfix(tokenized[j].capitalize()) + ' ' + voila.singlequoteSQLfix(tokenized[i].capitalize())
+        if nerPersonTagging(x):
+            name, stat, player = nerPersonTagging(x)
+            if name and stat and player:
+                dict[name] = [stat, player]
+        elif n_gramplayerLookup(y):
+            name, stat, player = n_gramplayerLookup(y)
+            if name and stat and player:
+                dict[name] = [stat, player]
+        j+=1
+    # if dict: return dict
+    if dict:
+        c = verifyInput_toDict(tokenized, dict)
+        return c
+    else: return False
+
+def verifyInput_toDict(tokenized: list, dict: dict):
+    sentence = ''
+    for i in tokenized:
+        sentence = sentence + i + ' '
+    keyset = set()
+    val = {}
+    for key in dict.keys():
+        if key.lower() in sentence:
+            val[key] = dict.get(key)
+    return val
+
+def n_gramplayerLookup(playernamewithlike):
+    x  = sqlQuery.search_stats_DB(playernamewithlike)
+    y= sqlQuery.search_player_dB(playernamewithlike)
+    if x and y:
+        name = y[0][0]
+        return name,x,y
+    elif throwname_atDB(playernamewithlike):
+        namefound = throwname_atDB(playernamewithlike)
+        namefound = voila.singlequoteSQLfix(namefound)
+        x = sqlQuery.search_stats_DB(namefound)
+        y = sqlQuery.search_player_dB(namefound)
+        if x and y:
+            name = y[0][0]
+            return name, x, y
+    else: return False
+
+
+
+
 
 def parseQuestion(question):
-    if nerPersonTagging(question): personhit = nerPersonTagging(question)
+    # if nerPersonTagging(question): personhit = nerPersonTagging(question)
+    if attempt_one(question): personhit = attempt_one(question)
+    elif throwname_atDB(question): personhit = throwname_atDB(question)
+
     else: return "unable to find match"
     if personhit: question = removeName_fromQuery(personhit, question)
     tokenized = nltk.word_tokenize(question)
@@ -216,7 +275,8 @@ def getstat_by_Year_returnStat(personhit, tableInfo, year):
     for person in personhit.values():
         person = person[0]
         for j in range(len(person)):
-            if year == person[j][2]: return person[j][tableInfo[4]]
+            if person[j][2] != "Unknown":
+                if year == person[j][2]: return person[j][tableInfo[4]]
 
 
 def getMax_from_N_ppl_noDate_returnName(personhit, tableInfo):
@@ -224,7 +284,10 @@ def getMax_from_N_ppl_noDate_returnName(personhit, tableInfo):
     for person, personstats in personhit.items():
         personstats = personstats[0]
         getmax[person] = float(maxFrom_one_player_return_name(personstats, tableInfo))
-        print(f'name: {person}: max: {maxFrom_one_player_return_name(personstats, tableInfo)}')
+        if maxFrom_one_player_return_name(personstats, tableInfo) < 1:
+            print(f'name: {person}: max: Unknown')
+        else:
+            print(f'name: {person}: max: {maxFrom_one_player_return_name(personstats, tableInfo)}')
     return max(getmax, key=getmax.get)
 
 def get_max_onePerson_return_date(personhit: dict, tableInfo):
@@ -232,28 +295,31 @@ def get_max_onePerson_return_date(personhit: dict, tableInfo):
     for person in personhit.values():
         person = person[0]
         for i in range(len(person)):
-            if float(person[i][tableInfo[4]]) > float(highest[0]):
-                highest[0] = float(person[i][tableInfo[4]])
-                highest[1] = i
-        return person[highest[1]][2]
+            if person[i][tableInfo[4]] != "Unknown":
+                if float(person[i][tableInfo[4]]) > float(highest[0]):
+                    highest[0] = float(person[i][tableInfo[4]])
+                    highest[1] = i
+    return person[highest[1]][2]
 
 def get_min_onePerson_return_date(personhit: dict, tableInfo):
     highest = [999999.0, ""]
     for person in personhit.values():
         person = person[0]
         for i in range(len(person)):
-            if float(person[i][tableInfo[4]]) < float(highest[0]):
-                highest[0] = float(person[i][tableInfo[4]])
-                highest[1] = i
-        return person[highest[1]][2]
+            if person[i][tableInfo[4]] != "Unknown":
+                if float(person[i][tableInfo[4]]) < float(highest[0]):
+                    highest[0] = float(person[i][tableInfo[4]])
+                    highest[1] = i
+    return person[highest[1]][2]
 
 def getMin_withYear_andName_returnName(personhit: dict, tableInfo: list, year):
     get_name = {}
     for x,person in personhit.items():
         person = person[0]
         for j in range(len(person)):
-            if year == person[j][2]:
-                get_name[x] =  float(person[j][tableInfo[4]])
+            if person[j][2] != "Unknown":
+                if year == person[j][2]:
+                    get_name[x] =  float(person[j][tableInfo[4]])
     return min(get_name, key=get_name.get)
 
 def getMax_withYear_andName_returnName(personhit, tableInfo, year):
@@ -261,8 +327,9 @@ def getMax_withYear_andName_returnName(personhit, tableInfo, year):
     for x, person in personhit.items():
         person = person[0]
         for j in range(len(person)):
-            if year == person[j][2]:
-                get_name[x] = float(person[j][tableInfo[4]])
+            if person[j][2] != "Unknown":
+                if year == person[j][2]:
+                    get_name[x] = float(person[j][tableInfo[4]])
     return max(get_name, key=get_name.get)
 
 def getStats(personhit: dict, tableInfo: list, minr, maxr, year, who, when):
@@ -294,36 +361,40 @@ def getMin_stat_noYear_returnstat(personhit, tableInfo):
     for person in personhit.values():
         person = person[0]
         for i in range(len(person)):
-            if float(person[i][tableInfo[4]]) < float(highest[0]):
-                highest[0] = float(person[i][tableInfo[4]])
-                highest[1] = i
-        return person[highest[1]][tableInfo[4]]
+            if person[i][tableInfo[4]] != "Unknown":
+                if float(person[i][tableInfo[4]]) < float(highest[0]):
+                    highest[0] = float(person[i][tableInfo[4]])
+                    highest[1] = i
+    return person[highest[1]][tableInfo[4]]
 
 def getMax_stat_noYear_returnstat(personhit, tableInfo):
     highest = [0.0, ""]
     for person in personhit.values():
         person = person[0]
         for i in range(len(person)):
-            if float(person[i][tableInfo[4]]) > float(highest[0]):
-                highest[0] = float(person[i][tableInfo[4]])
-                highest[1] = i
-        return person[highest[1]][tableInfo[4]]
+            if person[i][tableInfo[4]] != "Unknown":
+                if float(person[i][tableInfo[4]]) > float(highest[0]):
+                    highest[0] = float(person[i][tableInfo[4]])
+                    highest[1] = i
+    return person[highest[1]][tableInfo[4]]
 
 def minFrom_one_player_return_name(person: dict, tableInfo):
     highest = [999999.0, ""]
     for i in range(len(person)):
-        if float(person[i][tableInfo[4]]) < float(highest[0]):
-            highest[0] = float(person[i][tableInfo[4]])
-            highest[1] = i
+        if person[i][tableInfo[4]] != "Unknown":
+            if float(person[i][tableInfo[4]]) < float(highest[0]):
+                highest[0] = float(person[i][tableInfo[4]])
+                highest[1] = i
     return highest[0]
 
 
 def maxFrom_one_player_return_name(person: dict, tableInfo):
     highest = [0.0, ""]
     for i in range(len(person)):
-        if float(person[i][tableInfo[4]]) > float(highest[0]):
-            highest[0] = float(person[i][tableInfo[4]])
-            highest[1] = i
+        if person[i][tableInfo[4]] != "Unknown":
+            if float(person[i][tableInfo[4]]) > float(highest[0]):
+                highest[0] = float(person[i][tableInfo[4]])
+                highest[1] = i
     return highest[0]
 
 
@@ -343,3 +414,29 @@ def throw_atDB(tokenized: list, wordResults, playerResults,statsResults, nonMatc
             else:
                 nonMatchedWord.append(word)
     return n_Gram.strip()
+
+def throwname_atDB(question):
+    if question[len(question)-1] == 's': question = question[:len(question)-1]
+    tokenized = nltk.word_tokenize(question)
+    tokenized = voila.get_stopwords(tokenized)
+    tokenized = voila.get_basewords(tokenized)
+    name = []
+    listt = [set() for i in range(2)]
+    i = 0
+    for word in tokenized:
+        if word[len(word) -1] == "s": word = word[:len(word)-1]
+        result = sqlQuery.search_stats_DB(word)
+        if result:
+            for size in range(len(result)):
+                name.append(result[size][0])
+            listt[i] = set(name)
+            name = []
+            i+=1
+    if listt[0] and not listt[1]:
+        return listt[0].pop()
+    if listt[0].intersection(listt[1]):
+        namehit = listt[0].intersection(listt[1])
+        namehit = namehit.pop()
+        return namehit
+
+    return False

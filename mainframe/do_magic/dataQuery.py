@@ -75,6 +75,13 @@ def search_player_dB(word):
 def search_stats_DB(word):
     return dbQuery("select * from stats where LOWER(name) LIKE LOWER ('%" + word + "%')")
 
+def search_player_dB_noLike(word):
+    return dbQuery("select * from player_data where LOWER(name) = LOWER ('" + word + "')")
+
+
+def search_stats_DB_noLike(word):
+    return dbQuery("select * from stats where LOWER(name) = LOWER ('" + word + "')")
+
 def search_stats_DB_exact_match(word): #duplicate for playerDB and Phrase DB
     return dbQuery("select * from stats where name = "+ word + "")
 
