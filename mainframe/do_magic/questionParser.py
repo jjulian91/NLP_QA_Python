@@ -89,12 +89,19 @@ def n_gramplayerLookup(playernamewithlike):
 
 def parseQuestion(question):
     questionSplit = question.split()
+    specials = {"3s", "3\'s", "2s", "2\'s","three's", "two's"}
     columnNames = ["G", "GS", "MP", "PER", "TS%", "3Par", "FTr", "ORB%", "DRB%", "TRB%", "AST%", "STL%", "BLK%", "TOV%",
                    "USG%", "OWS", "DWS", "WS", "WS/48", "DBPM", "BPM", "VORP", "FG", "FGA", "FG%", "3p", "3PA", "3P%",
                    "2p", "2pa", "2p%", "eFG%", "FT", "FTA", "FT%", "ORB", "DRB", "TRB", "AST", "STL", "BLK", "TOV", "PF",
                    "PTS", "year_start", "year_end", "position", "height", "weight", "birth_date", "college", "city",
                    "state/county"]
     setfromquestion = set(questionSplit)
+
+    specialIntersect = specials.intersection(setfromquestion)
+    if specialIntersect:
+        for name in specialIntersect:
+            if (name.find("3") >= 0) or (name.find("three") >= 0): question = question.replace(name, "threes")
+            else: question = question.replace(name, "twos")
     columnNames = set(columnNames)
     columnNames = columnNames.intersection(setfromquestion)
     if columnNames:
@@ -104,12 +111,14 @@ def parseQuestion(question):
 
     personhit = attempt_one(question)
     if not personhit: personhit = throwname_atDB(question)
-    elif not personhit: return getMinMax(question)
+    #elif not personhit: return getMinMax(question)
     else: question = removeName_fromQuery(personhit, question)
 
     tokenized = nltk.word_tokenize(question)
-    minimumQualifiers = ["minimum", "min", "least", "lowest", "smallest", "shortest", "bottom","lesser", "less", "worst"]
-    maximumQualifiers = ["maximum", "most", "max", "highest", "biggest", "tallest", "top", "heaviest", "higher", "better", "taller", "many", "more", "best"]
+    minimumQualifiers = ["minimum", "min", "least", "lowest", "smallest", "shortest", "bottom","lesser", "less",
+                         "worst", "shorter", "lower"]
+    maximumQualifiers = ["maximum", "most", "max", "highest", "biggest", "tallest", "top", "heaviest",
+                         "higher", "better", "taller", "many", "more", "best"]
     tableName = "placeholder"
     min = False
     max = False
