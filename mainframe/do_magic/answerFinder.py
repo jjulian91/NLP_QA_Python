@@ -1,3 +1,4 @@
+# i dont think we use this class anymore?
 import collections
 import nltk
 import do_magic.voila as voila
@@ -85,7 +86,7 @@ def breakTie(searchMatch, nonMatched):
                         voila.addToList(searchMatch, result)
 
     return searchMatch
-
+# p-never
 def wordNetResults(resultArray, nonMatched):
     for word in nonMatched:
         for syn in wordnet.synsets(word):

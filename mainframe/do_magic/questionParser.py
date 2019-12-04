@@ -3,6 +3,8 @@ import do_magic.voila as voila
 import do_magic.dataQuery as sqlQuery
 import do_magic.answerFinder as answer
 
+# checks if there is an actual first name and last name in the question parameter, if there is a hit it returns a dict with the name as the key and the values as a list. 
+# index 0 is the stats data and index 1 is player_data
 def nerPersonTagging(question: str):
     find_persons = voila.structure_ne(voila.nltk_tagger(voila.process_text(question)))
     find_persons = [i[0] for i in find_persons]
@@ -15,17 +17,30 @@ def nerPersonTagging(question: str):
     if not find_persons: return False
     return dict
 
-
+# if nerPersonTagging does find a name but that name is not in our data base then it returns a name BUT this name should have an empty list because that person isnt in our database.
+# this function checks an empty list from the dict
 def checkifhit(dict: dict):
     for i in dict.values():
         if len(i[0]) == 0 and len(i[1]) == 0: return True
 
+# once all is ran and the dict is valid, the name is extracted from the query
 def removeName_fromQuery(personhit, question: str):
     for person in personhit.keys():
         if person.lower() in question: question = question.replace(person.lower(), '')
     x = question.find("\'s")
     if x: question = question.replace("\'s", '')
     return question
+
+# the nitty gritty, this tokenizes a sentence, extracts stop words. once that is done, there is a generic sentence which make POS tagger think this is a person, 
+# this is how NER works so well
+# this function loopes over the tokenized/stopwords list and has 2 pointers, the pointer is as follows: i > j + 1 { i is always greater than j by 1}
+# shaq is hard coded cause fuck that
+# once the sentence is completed and NER has a hit, it exits
+# else....
+# it searches for the name as a whole, meaning first name and last name together into the query, if hit then exit
+# else..
+# puts the first and last name into a list and does individual look up db hit
+# if there is a hit then it comes back and checks if the name passed into the function is 'in' what is returned 
 
 def attempt_one(question: str):
     tokenized = nltk.word_tokenize(question)
@@ -67,6 +82,8 @@ def attempt_one(question: str):
     if dict: return dict
     else: return False
 
+# basically throwing names at the database as a FULL name.. eg. larry bird, 
+# NOT ['larry', 'bird']
 def n_gramplayerLookup(playernamewithlike):
     x  = sqlQuery.search_stats_DB(playernamewithlike)
     y= sqlQuery.search_player_dB(playernamewithlike)
@@ -86,7 +103,7 @@ def n_gramplayerLookup(playernamewithlike):
 
 
 
-
+# basically magic 
 def parseQuestion(question):
     questionSplit = question.split()
     specials = {"3s", "3\'s", "2s", "2\'s","three's", "two's"}
@@ -160,13 +177,16 @@ def parseQuestion(question):
         if minmaxValuegeneral: return minmaxValuegeneral
     return "unable to find match"
 
-
+# dont think this is used 12/4
 def raw_input_to_N_tuples(string, list_of_tuples):
     for row in list_of_tuples:
         if row[0] == string:
             return row
 
-
+# at this point the tokenized query should only be a couple words
+# it throws all these words at the DB, if there is a hit it appends it to an n-gram. then once this is all done. 
+# it takes the whole n-grammed sentence and searches phrase for that exact hit.
+# if hit: gold, if not exit
 def get_searchTable_andName(tokenized):
     n_Gram = ''
     for word in tokenized:
@@ -178,6 +198,7 @@ def get_searchTable_andName(tokenized):
     n_Gram = n_Gram[0]
     return n_Gram, n_Gram[5]
 
+# this is code from old refactor, dont think this is used 12/4
 def stats_true(min, max, year, statsResults, wordResults, nonMatchedWord):
     # function 3
     if min:
@@ -213,6 +234,7 @@ def stats_true(min, max, year, statsResults, wordResults, nonMatchedWord):
         return statsResults
         # end function 3
 
+# this is code from old refactor, dont think this is used 12/4
 def player_data_true(playerResults, nonMatchedWord):
     # function 2
     playerResults = answer.processResults(playerResults, nonMatchedWord)  # processResults begins triangulation.
@@ -222,6 +244,7 @@ def player_data_true(playerResults, nonMatchedWord):
         return playerResults
     # end function 2
 
+# get max value from playerdata[one person]
 def max_from_playerData_returnPerson(personhit:dict, tableInfo):
     val = {}
     for person, values in personhit.items():
@@ -235,6 +258,7 @@ def max_from_playerData_returnPerson(personhit:dict, tableInfo):
     edge =  edgecase(val)
     return edge if edge else truemax
 
+# get min value from playerdata[one person]
 def min_from_playerData_returnPerson(personhit:dict, tableInfo):
     val = {}
     for person, values in personhit.items():
@@ -250,21 +274,25 @@ def min_from_playerData_returnPerson(personhit:dict, tableInfo):
     edge = edgecase(val)
     return edge if edge else truemax
 
+# edge case incase the values in the set have the SAME value
 def edgecase(val):
     l = [v for v in val.values()]
     return "they are the same" if len(set(l)) == 1 else False
 
+# the player_data was found and it dives into this function
 def getPlayerData(personhit: dict, tableInfo,min, max, year):
     if min and year: pass
     elif min and not year: return min_from_playerData_returnPerson(personhit, tableInfo)
     elif max and year: pass
     elif max and not year: return max_from_playerData_returnPerson(personhit, tableInfo)
     elif year and not max and not min: pass
+    # there is no person, no max and no min, eg, what college did x go to 
     elif not year and not max and not min:
         for person in personhit.values():
             person = person[1]
             return person[0][tableInfo[4]]
 
+# from dict of names, it checks for the lowest value in all of those then returns the name
 def getMin_from_N_ppl_noDate_returnName(personhit, tableInfo):
     getmin = {}
     for person, personstats in personhit.items():
@@ -273,6 +301,7 @@ def getMin_from_N_ppl_noDate_returnName(personhit, tableInfo):
         print(f'name: {person}: min: {minFrom_one_player_return_name(personstats, tableInfo)}')
     return min(getmin, key=getmin.get)
 
+# gets stat value given a year, eg: who had the most x in 2000
 def getstat_by_Year_returnStat(personhit, tableInfo, year):
     for person in personhit.values():
         person = person[0]
@@ -281,6 +310,7 @@ def getstat_by_Year_returnStat(personhit, tableInfo, year):
                 if year == person[j][2]: return person[j][tableInfo[4]]
 
 
+# gets max value from N ppl when there is not a date given, returns a name
 def getMax_from_N_ppl_noDate_returnName(personhit, tableInfo):
     getmax = {}
     for person, personstats in personhit.items():
@@ -292,6 +322,7 @@ def getMax_from_N_ppl_noDate_returnName(personhit, tableInfo):
             print(f'name: {person}: max: {maxFrom_one_player_return_name(personstats, tableInfo)}')
     return max(getmax, key=getmax.get)
 
+# gets max value from N person with a date. eg: when did x have max 3's
 def get_max_onePerson_return_date(personhit: dict, tableInfo):
     highest = [0.0, ""]
     for person in personhit.values():
@@ -303,6 +334,7 @@ def get_max_onePerson_return_date(personhit: dict, tableInfo):
                     highest[1] = i
     return person[highest[1]][2]
 
+# gets min value from N person with a date. eg: when did x have min 3's
 def get_min_onePerson_return_date(personhit: dict, tableInfo):
     highest = [999999.0, ""]
     for person in personhit.values():
@@ -314,6 +346,7 @@ def get_min_onePerson_return_date(personhit: dict, tableInfo):
                     highest[1] = i
     return person[highest[1]][2]
 
+# a name is given and a year is given returns a name; MIN
 def getMin_withYear_andName_returnName(personhit: dict, tableInfo: list, year):
     get_name = {}
     for x,person in personhit.items():
@@ -324,6 +357,7 @@ def getMin_withYear_andName_returnName(personhit: dict, tableInfo: list, year):
                     get_name[x] =  float(person[j][tableInfo[4]])
     return min(get_name, key=get_name.get)
 
+# a name is given and a year is given returns a name; MAX
 def getMax_withYear_andName_returnName(personhit, tableInfo, year):
     get_name = {}
     for x, person in personhit.items():
@@ -334,6 +368,7 @@ def getMax_withYear_andName_returnName(personhit, tableInfo, year):
                     get_name[x] = float(person[j][tableInfo[4]])
     return max(get_name, key=get_name.get)
 
+# what makes our magic, should be pretty easy to read. 
 def getStats(personhit: dict, tableInfo: list, minr, maxr, year, who, when):
     if when and maxr:
         return get_max_onePerson_return_date(personhit, tableInfo)
@@ -358,6 +393,7 @@ def getStats(personhit: dict, tableInfo: list, minr, maxr, year, who, when):
     elif maxr:
         return getMax_stat_noYear_returnstat(personhit, tableInfo)
 
+# searces for the min stat without a year
 def getMin_stat_noYear_returnstat(personhit, tableInfo):
     highest = [999999.0, ""]
     for person in personhit.values():
@@ -399,7 +435,7 @@ def maxFrom_one_player_return_name(person: dict, tableInfo):
                 highest[1] = i
     return highest[0]
 
-
+# dont think this is used 12/4
 def throw_atDB(tokenized: list, wordResults, playerResults,statsResults, nonMatchedWord):
     n_Gram = ''
     for word in tokenized:
@@ -417,6 +453,9 @@ def throw_atDB(tokenized: list, wordResults, playerResults,statsResults, nonMatc
                 nonMatchedWord.append(word)
     return n_Gram.strip()
 
+# parse for s at the end of a name like irvings, also nitty gritty
+# throws list of names at db. this is basically triangulation but with a set instead, but it gets all the names from the db, puts that into a set and compares the two.
+# it does this for first name and last name and the intersection is where they meet and that is our value
 def throwname_atDB(question):
     if question[len(question)-1] == 's': question = question[:len(question)-1]
     tokenized = nltk.word_tokenize(question)
@@ -443,6 +482,7 @@ def throwname_atDB(question):
 
     return False
 
+# general db look up max, min, year stuff
 def getMinMax(tokenized, PRE_basewords, maxx, minn, year, columnName):
     if columnName:
         column = columnName.pop()
